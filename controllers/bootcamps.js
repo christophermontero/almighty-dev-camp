@@ -24,7 +24,7 @@ exports.getBootcamp = async (req, res, next) => {
 
     res.json({ success: true, data: bootcamp });
   } catch (error) {
-    res.status(404).json({ success: false });
+    res.status(400).json({ success: false });
   }
 };
 
@@ -58,6 +58,14 @@ exports.updateBootcamp = async (req, res, next) => {
 // @desc Delete bootcamp
 // @route DELETE /api/v1/bootcamps/:id
 // @access Private
-exports.deleteBootcamp = (req, res, next) => {
-  res.json({ success: true, msg: `Delete bootcamp ${req.params.id}` });
+exports.deleteBootcamp = async (req, res, next) => {
+  try {
+    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+
+    if (!bootcamp) return res.status(404).json({ success: false });
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ success: false });
+  }
 };

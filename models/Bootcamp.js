@@ -75,6 +75,26 @@ const BootcampSchema = new mongoose.Schema({
   photo: {
     type: String,
     default: 'no-photo.jpg'
+  },
+  housing: {
+    type: Boolean,
+    default: false
+  },
+  jobAssistance: {
+    type: Boolean,
+    default: false
+  },
+  jobGuarantee: {
+    type: Boolean,
+    default: false
+  },
+  acceptGi: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 

@@ -14,6 +14,9 @@ require('./config/db')();
 
 const app = express();
 
+// Body parser
+app.use(express.json());
+
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

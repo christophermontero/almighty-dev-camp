@@ -15,17 +15,16 @@ require('./config/db')();
 
 const app = express();
 
-// Body parser
-app.use(express.json());
-
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Body parser
+app.use(express.json());
+
 // Mount routes
 app.use('/api/v1/bootcamps', bootcamps);
-
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

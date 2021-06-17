@@ -92,4 +92,78 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data).toHaveProperty('name', bootcamp.name);
     });
   });
+
+  describe('POST /', () => {
+    let name, description, website, phone, email, address, carrers;
+
+    const exec = () => {
+      return request(server).post('/api/v1/bootcamps').send({
+        name,
+        description,
+        website,
+        phone,
+        email,
+        address,
+        carrers
+      });
+    };
+
+    beforeEach(() => {
+      name = 'Bootcamp 1';
+      description = 'Bootcamp description 1';
+      website = 'https://bootcamp1.com';
+      phone = '(111) 111-1111';
+      email = 'boot1@test.com';
+      address = 'Boot address 1';
+      careers = ['Web Development'];
+    });
+
+    it('should return 400 if name is greater than 50 characters', async () => {
+      name = new Array(52).join('a');
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if description is greater than 500 characters', async () => {
+      name = new Array(502).join('a');
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if website is invalid', async () => {
+      website = 'bootcamp1.com';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if phone is less than 8 characters', async () => {
+      phone = '1234567';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if phone is greater than 15 characters', async () => {
+      phone = '1234567891234567';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if email is invalid', async () => {
+      email = 'email.com';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+  });
 });

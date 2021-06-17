@@ -10,5 +10,9 @@ module.exports = async () => {
     useCreateIndex: true
   });
 
-  console.log(`MongoDB connected: ${conn.connection.host}`.cyan.underline.bold);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(
+      `MongoDB connected: ${conn.connection.host}`.cyan.underline.bold
+    );
+  }
 };

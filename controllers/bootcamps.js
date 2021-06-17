@@ -6,7 +6,7 @@ const Bootcamp = require('../models/Bootcamp');
 exports.getBootcamps = async (req, res, next) => {
   const bootcamps = await Bootcamp.find();
 
-  res.json({ success: true, data: bootcamps });
+  res.json({ success: true, count: bootcamps.length, data: bootcamps });
 };
 
 // @desc Get single bootcamp

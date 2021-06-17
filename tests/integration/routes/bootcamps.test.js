@@ -373,4 +373,66 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data.careers).toEqual(expect.arrayContaining(newCareers));
     });
   });
+
+  describe('DELETE /:id', () => {
+    let bootcamp, id;
+
+    const exec = () => {
+      return request(server).delete(`/api/v1/bootcamps/${id}`);
+    };
+
+    beforeEach(async () => {
+      bootcamp = new Bootcamp({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      await bootcamp.save();
+
+      id = bootcamp._id;
+    });
+
+    it('should return 400 if id is invalid', async () => {
+      id = '1';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 if bootcamp with the given id was not found', async () => {
+      id = mongoose.Types.ObjectId();
+
+      const res = await exec();
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should delete the bootcamp if input is valid', async () => {
+      await exec();
+
+      const bootcampInDb = await Bootcamp.findById(id);
+
+      expect(bootcampInDb).toBeNull();
+    });
+
+    it('should return the remove bootcamp', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toHaveProperty('_id');
+      expect(res.body.data).toHaveProperty('name', bootcamp.name);
+      expect(res.body.data).toHaveProperty('description', bootcamp.description);
+      expect(res.body.data).toHaveProperty('website', bootcamp.website);
+      expect(res.body.data).toHaveProperty('phone', bootcamp.phone);
+      expect(res.body.data).toHaveProperty('email', bootcamp.email);
+      expect(res.body.data).toHaveProperty('address', bootcamp.address);
+      expect(res.body.data.careers).toEqual(
+        expect.arrayContaining(bootcamp.careers)
+      );
+    });
+  });
 });

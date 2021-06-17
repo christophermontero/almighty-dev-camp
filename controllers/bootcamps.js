@@ -64,7 +64,7 @@ exports.deleteBootcamp = async (req, res, next) => {
 
     if (!bootcamp) return res.status(404).json({ success: false });
 
-    res.json({ success: true });
+    res.json({ success: true, data: bootcamp });
   } catch (error) {
     res.status(400).json({ success: false });
   }

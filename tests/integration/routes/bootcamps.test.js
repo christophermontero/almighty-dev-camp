@@ -28,7 +28,7 @@ describe('/api/v1/bootcamps', () => {
           description: 'Bootcamp description 1',
           website: 'https://bootcamp1.com',
           phone: '(111) 111-1111',
-          email: 'boot1@test.com',
+          email: 'boot1@email.com',
           address: 'Boot address 1',
           careers: ['Web Development']
         },
@@ -37,7 +37,7 @@ describe('/api/v1/bootcamps', () => {
           description: 'Bootcamp description 2',
           website: 'https://bootcamp2.com',
           phone: '(222) 222-2222',
-          email: 'boot2@test.com',
+          email: 'boot2@email.com',
           address: 'Boot address 2',
           careers: ['Web Development']
         }
@@ -77,7 +77,7 @@ describe('/api/v1/bootcamps', () => {
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
         phone: '(111) 111-1111',
-        email: 'boot1@test.com',
+        email: 'boot1@email.com',
         address: 'Boot address 1',
         careers: ['Web Development']
       });
@@ -94,7 +94,7 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('POST /', () => {
-    let name, description, website, phone, email, address, carrers;
+    let name, description, website, phone, email, address, careers;
 
     const exec = () => {
       return request(server).post('/api/v1/bootcamps').send({
@@ -104,7 +104,7 @@ describe('/api/v1/bootcamps', () => {
         phone,
         email,
         address,
-        carrers
+        careers
       });
     };
 
@@ -113,7 +113,7 @@ describe('/api/v1/bootcamps', () => {
       description = 'Bootcamp description 1';
       website = 'https://bootcamp1.com';
       phone = '(111) 111-1111';
-      email = 'boot1@test.com';
+      email = 'boot1@email.com';
       address = 'Boot address 1';
       careers = ['Web Development'];
     });
@@ -164,6 +164,213 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.status).toBe(400);
+    });
+
+    it('should save the bootcamp if it is invalid', async () => {
+      await exec();
+
+      const bootcamp = await Bootcamp.find({ name: 'Bootcamp 1' });
+
+      expect(bootcamp).not.toBeNull();
+    });
+
+    it('should return the bootcamp if it is valid', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toHaveProperty('_id');
+      expect(res.body.data).toHaveProperty('name', 'Bootcamp 1');
+      expect(res.body.data).toHaveProperty(
+        'description',
+        'Bootcamp description 1'
+      );
+      expect(res.body.data).toHaveProperty('website', 'https://bootcamp1.com');
+      expect(res.body.data).toHaveProperty('phone', '(111) 111-1111');
+      expect(res.body.data).toHaveProperty('email', 'boot1@email.com');
+      expect(res.body.data).toHaveProperty('address', 'Boot address 1');
+      expect(res.body.data.careers).toEqual(
+        expect.arrayContaining(['Web Development'])
+      );
+    });
+  });
+
+  describe('PUT /:id', () => {
+    let bootcamp,
+      id,
+      newName,
+      newDescription,
+      newWebsite,
+      newPhone,
+      newEmail,
+      newAddress,
+      newCareers;
+
+    const exec = () => {
+      return request(server).put(`/api/v1/bootcamps/${id}`).send({
+        name: newName,
+        description: newDescription,
+        website: newWebsite,
+        phone: newPhone,
+        email: newEmail,
+        address: newAddress,
+        careers: newCareers
+      });
+    };
+
+    beforeEach(async () => {
+      bootcamp = new Bootcamp({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      await bootcamp.save();
+
+      id = bootcamp._id;
+      newName = 'new Bootcamp';
+      newDescription = 'new Bootcamp description';
+      newWebsite = 'https://new-bootcamp.com';
+      newPhone = '(000) 111-1111';
+      newEmail = 'newboot@email.com';
+      newAddress = 'new Boot address';
+      newCareers = ['Web Development', 'UI/UX'];
+    });
+
+    it('should return 400 if name is greater than 50 characters', async () => {
+      newName = new Array(52).join('a');
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if description is greater than 500 characters', async () => {
+      newName = new Array(502).join('a');
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if website is invalid', async () => {
+      newWebsite = 'bootcamp1.com';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if phone is less than 8 characters', async () => {
+      newPhone = '1234567';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if phone is greater than 15 characters', async () => {
+      newPhone = '1234567891234567';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if email is invalid', async () => {
+      newEmail = 'email.com';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if id is invalid', async () => {
+      id = '1';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 if bootcamp with the given id was not found', async () => {
+      id = mongoose.Types.ObjectId();
+
+      const res = await exec();
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should update name if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.name).toBe(newName);
+    });
+
+    it('should update description if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.description).toBe(newDescription);
+    });
+
+    it('should update website if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.website).toBe(newWebsite);
+    });
+
+    it('should update phone if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.phone).toBe(newPhone);
+    });
+
+    it('should update email if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.email).toBe(newEmail);
+    });
+
+    it('should update address if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.address).toBe(newAddress);
+    });
+
+    it('should update careers if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.careers).toEqual(
+        expect.arrayContaining(newCareers)
+      );
+    });
+
+    it('should return the updated bootcamp if it is valid', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toHaveProperty('_id');
+      expect(res.body.data).toHaveProperty('name', newName);
+      expect(res.body.data).toHaveProperty('description', newDescription);
+      expect(res.body.data).toHaveProperty('website', newWebsite);
+      expect(res.body.data).toHaveProperty('phone', newPhone);
+      expect(res.body.data).toHaveProperty('email', newEmail);
+      expect(res.body.data).toHaveProperty('address', newAddress);
+      expect(res.body.data.careers).toEqual(expect.arrayContaining(newCareers));
     });
   });
 });

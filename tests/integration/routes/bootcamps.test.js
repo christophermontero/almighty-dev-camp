@@ -1,3 +1,4 @@
+require('dotenv').config({ path: './config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
 const Bootcamp = require('../../../models/Bootcamp');
@@ -186,7 +187,7 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data).toHaveProperty('website', 'https://bootcamp1.com');
       expect(res.body.data).toHaveProperty('phone', '(111) 111-1111');
       expect(res.body.data).toHaveProperty('email', 'boot1@email.com');
-      expect(res.body.data).toHaveProperty('address', 'Boot address 1');
+      expect(res.body.data.address).toBeUndefined();
       expect(res.body.data.careers).toEqual(
         expect.arrayContaining(['Web Development'])
       );

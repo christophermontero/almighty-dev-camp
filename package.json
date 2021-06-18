@@ -29,6 +29,8 @@
     "express": "^4.17.1",
     "mongoose": "^5.12.14",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.6.1",
+    "node-geocoder": "^3.27.0",
     "slugify": "^1.5.3",
     "supertest": "^6.1.3"
   },

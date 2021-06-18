@@ -286,7 +286,7 @@ describe('/api/v1/bootcamps', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if id is invalid', async () => {
+    it('should return 400 if invalid id is passed', async () => {
       id = '1';
 
       const res = await exec();
@@ -396,7 +396,7 @@ describe('/api/v1/bootcamps', () => {
       id = bootcamp._id;
     });
 
-    it('should return 400 if id is invalid', async () => {
+    it('should return 400 if invalid id is passed', async () => {
       id = '1';
 
       const res = await exec();

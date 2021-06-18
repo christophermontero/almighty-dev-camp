@@ -1,8 +1,6 @@
 name: CI-almighty-devcamp
 
 on:
-  push:
-    branches: [develop]
   pull_request:
     types: [opened, reopened]
     branches: [develop]

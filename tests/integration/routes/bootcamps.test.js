@@ -1,3 +1,4 @@
+require('dotenv').config({ path: './config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
 const Bootcamp = require('../../../models/Bootcamp');
@@ -174,6 +175,40 @@ describe('/api/v1/bootcamps', () => {
       expect(bootcamp).not.toBeNull();
     });
 
+    it('should set the created date if input is valid', async () => {
+      await exec();
+
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+
+      const diff = new Date() - bootcampInDb.createdAt;
+
+      expect(bootcampInDb.createdAt).toBeDefined();
+      expect(diff).toBeLessThan(15 * 1000);
+    });
+
+    it('should set the location if input is valid', async () => {
+      await exec();
+
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+
+      expect(bootcampInDb.location).toHaveProperty('type', 'Point');
+      expect(bootcampInDb.location).toHaveProperty('coordinates');
+      expect(bootcampInDb.location).toHaveProperty('formattedAddress');
+      expect(bootcampInDb.location).toHaveProperty('street');
+      expect(bootcampInDb.location).toHaveProperty('city');
+      expect(bootcampInDb.location).toHaveProperty('state');
+      expect(bootcampInDb.location).toHaveProperty('zipcode');
+      expect(bootcampInDb.location).toHaveProperty('country');
+    });
+
+    it('should slugify the name if input is valid', async () => {
+      await exec();
+
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+
+      expect(bootcampInDb.slug).toBe('bootcamp-1');
+    });
+
     it('should return the bootcamp if it is valid', async () => {
       const res = await exec();
 
@@ -186,10 +221,17 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data).toHaveProperty('website', 'https://bootcamp1.com');
       expect(res.body.data).toHaveProperty('phone', '(111) 111-1111');
       expect(res.body.data).toHaveProperty('email', 'boot1@email.com');
-      expect(res.body.data).toHaveProperty('address', 'Boot address 1');
+      expect(res.body.data.address).toBeUndefined();
       expect(res.body.data.careers).toEqual(
         expect.arrayContaining(['Web Development'])
       );
+      expect(res.body.data).toHaveProperty('location');
+      expect(res.body.data).toHaveProperty('photo', 'no-photo.jpg');
+      expect(res.body.data).toHaveProperty('slug');
+      expect(res.body.data.housing).toBeFalsy();
+      expect(res.body.data.jobAssistance).toBeFalsy();
+      expect(res.body.data.jobGuarantee).toBeFalsy();
+      expect(res.body.data.acceptGi).toBeFalsy();
     });
   });
 
@@ -201,8 +243,11 @@ describe('/api/v1/bootcamps', () => {
       newWebsite,
       newPhone,
       newEmail,
-      newAddress,
-      newCareers;
+      newCareers,
+      newHousing,
+      newJobAssistance,
+      newJobGuarantee,
+      newAcceptGi;
 
     const exec = () => {
       return request(server).put(`/api/v1/bootcamps/${id}`).send({
@@ -211,8 +256,11 @@ describe('/api/v1/bootcamps', () => {
         website: newWebsite,
         phone: newPhone,
         email: newEmail,
-        address: newAddress,
-        careers: newCareers
+        careers: newCareers,
+        housing: newHousing,
+        jobAssistance: newJobAssistance,
+        jobGuarantee: newJobGuarantee,
+        acceptGi: newAcceptGi
       });
     };
 
@@ -234,8 +282,11 @@ describe('/api/v1/bootcamps', () => {
       newWebsite = 'https://new-bootcamp.com';
       newPhone = '(000) 111-1111';
       newEmail = 'newboot@email.com';
-      newAddress = 'new Boot address';
       newCareers = ['Web Development', 'UI/UX'];
+      newHousing = true;
+      newJobAssistance = true;
+      newJobGuarantee = true;
+      newAcceptGi = true;
     });
 
     it('should return 400 if name is greater than 50 characters', async () => {
@@ -347,7 +398,7 @@ describe('/api/v1/bootcamps', () => {
 
       const updatedBootcamp = await Bootcamp.findById(id);
 
-      expect(updatedBootcamp.address).toBe(newAddress);
+      expect(updatedBootcamp.address).toBeUndefined();
     });
 
     it('should update careers if input is valid', async () => {
@@ -360,6 +411,38 @@ describe('/api/v1/bootcamps', () => {
       );
     });
 
+    it('should update housing if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.housing).toBeTruthy();
+    });
+
+    it('should update job assistance if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.jobAssistance).toBeTruthy();
+    });
+
+    it('should update job guarantee if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.jobGuarantee).toBeTruthy();
+    });
+
+    it('should update acceptance gi if input is valid', async () => {
+      await exec();
+
+      const updatedBootcamp = await Bootcamp.findById(id);
+
+      expect(updatedBootcamp.acceptGi).toBeTruthy();
+    });
+
     it('should return the updated bootcamp if it is valid', async () => {
       const res = await exec();
 
@@ -369,8 +452,16 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data).toHaveProperty('website', newWebsite);
       expect(res.body.data).toHaveProperty('phone', newPhone);
       expect(res.body.data).toHaveProperty('email', newEmail);
-      expect(res.body.data).toHaveProperty('address', newAddress);
+      expect(res.body.data.createdAt).toBeDefined();
+      expect(res.body.data.address).toBeUndefined();
       expect(res.body.data.careers).toEqual(expect.arrayContaining(newCareers));
+      expect(res.body.data).toHaveProperty('location');
+      expect(res.body.data).toHaveProperty('slug');
+      expect(res.body.data).toHaveProperty('photo', 'no-photo.jpg');
+      expect(res.body.data.housing).toBeTruthy();
+      expect(res.body.data.jobAssistance).toBeTruthy();
+      expect(res.body.data.jobGuarantee).toBeTruthy();
+      expect(res.body.data.acceptGi).toBeTruthy();
     });
   });
 

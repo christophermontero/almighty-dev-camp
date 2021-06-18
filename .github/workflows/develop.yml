@@ -2,8 +2,7 @@ name: CI-almighty-devcamp
 
 on:
   pull_request:
-    types: [opened, reopened]
-    branches: [develop]
+    branches: develop
 
 jobs:
   build:

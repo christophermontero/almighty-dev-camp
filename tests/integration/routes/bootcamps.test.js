@@ -62,7 +62,6 @@ describe('/api/v1/bootcamps', () => {
       const res = await request(server).get(
         `/api/v1/bootcamps/${mongoose.Types.ObjectId()}`
       );
-      console.log(res.error);
 
       expect(res.status).toBe(404);
     });

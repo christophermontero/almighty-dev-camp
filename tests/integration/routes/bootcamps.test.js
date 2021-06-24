@@ -353,94 +353,27 @@ describe('/api/v1/bootcamps', () => {
       expect(res.status).toBe(404);
     });
 
-    it('should update name if input is valid', async () => {
+    it('should update bootcamp if it is valid', async () => {
       await exec();
 
-      const updatedBootcamp = await Bootcamp.findById(id);
+      const bootcampInDb = await Bootcamp.findById(id);
 
-      expect(updatedBootcamp.name).toBe(newName);
-    });
-
-    it('should update description if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.description).toBe(newDescription);
-    });
-
-    it('should update website if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.website).toBe(newWebsite);
-    });
-
-    it('should update phone if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.phone).toBe(newPhone);
-    });
-
-    it('should update email if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.email).toBe(newEmail);
-    });
-
-    it('should update address if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.address).toBeUndefined();
-    });
-
-    it('should update careers if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.careers).toEqual(
-        expect.arrayContaining(newCareers)
-      );
-    });
-
-    it('should update housing if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.housing).toBeTruthy();
-    });
-
-    it('should update job assistance if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.jobAssistance).toBeTruthy();
-    });
-
-    it('should update job guarantee if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.jobGuarantee).toBeTruthy();
-    });
-
-    it('should update acceptance gi if input is valid', async () => {
-      await exec();
-
-      const updatedBootcamp = await Bootcamp.findById(id);
-
-      expect(updatedBootcamp.acceptGi).toBeTruthy();
+      expect(bootcampInDb).toHaveProperty('_id');
+      expect(bootcampInDb).toHaveProperty('name', newName);
+      expect(bootcampInDb).toHaveProperty('description', newDescription);
+      expect(bootcampInDb).toHaveProperty('website', newWebsite);
+      expect(bootcampInDb).toHaveProperty('phone', newPhone);
+      expect(bootcampInDb).toHaveProperty('email', newEmail);
+      expect(bootcampInDb.createdAt).toBeDefined();
+      expect(bootcampInDb.address).toBeUndefined();
+      expect(bootcampInDb.careers).toEqual(expect.arrayContaining(newCareers));
+      expect(bootcampInDb).toHaveProperty('location');
+      expect(bootcampInDb).toHaveProperty('slug');
+      expect(bootcampInDb).toHaveProperty('photo', 'no-photo.jpg');
+      expect(bootcampInDb.housing).toBeTruthy();
+      expect(bootcampInDb.jobAssistance).toBeTruthy();
+      expect(bootcampInDb.jobGuarantee).toBeTruthy();
+      expect(bootcampInDb.acceptGi).toBeTruthy();
     });
 
     it('should return the updated bootcamp if it is valid', async () => {

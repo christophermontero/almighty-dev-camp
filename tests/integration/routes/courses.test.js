@@ -181,4 +181,131 @@ describe('/api/v1/courses', () => {
       expect(res.body.data).toHaveProperty('title', course.title);
     });
   });
+
+  describe('POST /bootcamps/:bootcampId/courses', () => {
+    let title,
+      description,
+      weeks,
+      tuition,
+      minimumSkill,
+      scholarhipsAvailable,
+      bootcamp,
+      bootcampId;
+
+    const exec = () => {
+      return request(server)
+        .post(`/api/v1/bootcamps/${bootcampId}/courses`)
+        .send({
+          title,
+          description,
+          weeks,
+          tuition,
+          minimumSkill,
+          scholarhipsAvailable,
+          bootcamp
+        });
+    };
+
+    beforeEach(async () => {
+      const newBootcamp = new Bootcamp({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      await newBootcamp.save();
+
+      title = 'Course 1';
+      description = 'Course description 1';
+      weeks = '1';
+      tuition = 1;
+      minimumSkill = 'beginner';
+      scholarhipsAvailable = true;
+      bootcamp = newBootcamp._id;
+      bootcampId = newBootcamp._id;
+    });
+
+    it('should return 404 if no bootcamp with the given id exists', async () => {
+      bootcampId = mongoose.Types.ObjectId();
+
+      const res = await exec();
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should return 400 if invalid bootcamp id is passed', async () => {
+      bootcampId = '1';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if title is no provided', async () => {
+      title = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if description is no provided', async () => {
+      description = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if week is no provided', async () => {
+      weeks = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if tuition is no provided', async () => {
+      tuition = null;
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if minimum skill is not in enum', async () => {
+      minimumSkill = 'a';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should save the course if it is valid', async () => {
+      await exec();
+
+      const course = await Course.find({ title: 'Course 1' });
+
+      expect(course).not.toBeNull();
+    });
+
+    it('should return the course if it is valid', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toHaveProperty('_id');
+      expect(res.body.data).toHaveProperty('title', 'Course 1');
+      expect(res.body.data).toHaveProperty(
+        'description',
+        'Course description 1'
+      );
+      expect(res.body.data).toHaveProperty('weeks', '1');
+      expect(res.body.data).toHaveProperty('tuition', 1);
+      expect(res.body.data).toHaveProperty('minimumSkill', 'beginner');
+      expect(res.body.data.scholarhipsAvailable).toBeTruthy();
+      expect(res.body.data).toHaveProperty('bootcamp');
+    });
+  });
 });

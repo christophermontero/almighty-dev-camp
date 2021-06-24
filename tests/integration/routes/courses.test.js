@@ -25,18 +25,16 @@ describe('/api/v1/courses', () => {
 
   describe('GET /', () => {
     it('should return all courses', async () => {
-      await Bootcamp.collection.insertMany([
-        {
-          name: 'Bootcamp 1',
-          description: 'Bootcamp description 1',
-          website: 'https://bootcamp1.com',
-          phone: '(111) 111-1111',
-          email: 'boot1@email.com',
-          address: 'Boot address 1',
-          careers: ['Web Development']
-        }
-      ]);
-      const { id } = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+      await Bootcamp.collection.insertOne({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       await Course.collection.insertMany([
         {
@@ -46,7 +44,7 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: id
+          bootcamp: bootcampInDb._id
         },
         {
           title: 'Course 2',
@@ -55,7 +53,7 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: id
+          bootcamp: bootcampInDb._id
         }
       ]);
 
@@ -88,7 +86,7 @@ describe('/api/v1/courses', () => {
     });
 
     it('should return all courses by bootcamp', async () => {
-      const bootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
@@ -97,8 +95,7 @@ describe('/api/v1/courses', () => {
         address: 'Boot address 1',
         careers: ['Web Development']
       });
-      await bootcamp.save();
-      const bootcampId = bootcamp._id;
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       await Course.collection.insertMany([
         {
@@ -108,7 +105,7 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampId
+          bootcamp: bootcampInDb._id
         },
         {
           title: 'Course 2',
@@ -117,12 +114,12 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampId
+          bootcamp: bootcampInDb._id
         }
       ]);
 
       const res = await request(server).get(
-        `/api/v1/bootcamps/${bootcampId}/courses`
+        `/api/v1/bootcamps/${bootcampInDb._id}/courses`
       );
 
       expect(res.status).toBe(200);
@@ -152,7 +149,7 @@ describe('/api/v1/courses', () => {
     });
 
     it('should return a course if valid id is passed', async () => {
-      const bootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
@@ -161,8 +158,7 @@ describe('/api/v1/courses', () => {
         address: 'Boot address 1',
         careers: ['Web Development']
       });
-      await bootcamp.save();
-      const bootcampId = bootcamp._id;
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       const course = new Course({
         title: 'Course 1',
@@ -171,7 +167,7 @@ describe('/api/v1/courses', () => {
         tuition: 1,
         minimumSkill: 'beginner',
         scholarhipsAvailable: true,
-        bootcamp: bootcampId
+        bootcamp: bootcampInDb._id
       });
       await course.save();
 
@@ -207,7 +203,7 @@ describe('/api/v1/courses', () => {
     };
 
     beforeEach(async () => {
-      const newBootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
@@ -216,7 +212,7 @@ describe('/api/v1/courses', () => {
         address: 'Boot address 1',
         careers: ['Web Development']
       });
-      await newBootcamp.save();
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       title = 'Course 1';
       description = 'Course description 1';
@@ -224,8 +220,8 @@ describe('/api/v1/courses', () => {
       tuition = 1;
       minimumSkill = 'beginner';
       scholarhipsAvailable = true;
-      bootcamp = newBootcamp._id;
-      bootcampId = newBootcamp._id;
+      bootcamp = bootcampInDb._id;
+      bootcampId = bootcampInDb._id;
     });
 
     it('should return 404 if no bootcamp with the given id exists', async () => {
@@ -333,27 +329,50 @@ describe('/api/v1/courses', () => {
     };
 
     beforeEach(async () => {
-      const bootcmp = new Bootcamp({
-        name: 'Bootcamp 1',
-        description: 'Bootcamp description 1',
-        website: 'https://bootcamp1.com',
-        phone: '(111) 111-1111',
-        email: 'boot1@email.com',
-        address: 'Boot address 1',
-        careers: ['Web Development']
-      });
-      await bootcmp.save();
+      // const bootcmp = new Bootcamp({
+      //   name: 'Bootcamp 1',
+      //   description: 'Bootcamp description 1',
+      //   website: 'https://bootcamp1.com',
+      //   phone: '(111) 111-1111',
+      //   email: 'boot1@email.com',
+      //   address: 'Boot address 1',
+      //   careers: ['Web Development']
+      // });
+      // await bootcmp.save();
 
-      const newBootcmp = new Bootcamp({
-        name: 'New bootcamp',
-        description: 'New bootcamp description',
-        website: 'https://newbootcamp.com',
-        phone: '(222) 222-2222',
-        email: 'newboot@email.com',
-        address: 'New boot address',
-        careers: ['Web Development']
-      });
-      await newBootcmp.save();
+      // const newBootcmp = new Bootcamp({
+      //   name: 'New bootcamp',
+      //   description: 'New bootcamp description',
+      //   website: 'https://newbootcamp.com',
+      //   phone: '(222) 222-2222',
+      //   email: 'newboot@email.com',
+      //   address: 'New boot address',
+      //   careers: ['Web Development']
+      // });
+      // await newBootcmp.save();
+
+      await Bootcamp.collection.insertMany([
+        {
+          name: 'Bootcamp 1',
+          description: 'Bootcamp description 1',
+          website: 'https://bootcamp1.com',
+          phone: '(111) 111-1111',
+          email: 'boot1@email.com',
+          address: 'Boot address 1',
+          careers: ['Web Development']
+        },
+        {
+          name: 'New bootcamp',
+          description: 'New bootcamp description',
+          website: 'https://newbootcamp.com',
+          phone: '(222) 222-2222',
+          email: 'newboot@email.com',
+          address: 'New boot address',
+          careers: ['Web Development']
+        }
+      ]);
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+      const newBootcampInDb = await Bootcamp.findOne({ name: 'New bootcamp' });
 
       course = new Course({
         title: 'Course 1',
@@ -362,7 +381,7 @@ describe('/api/v1/courses', () => {
         tuition: 1,
         minimumSkill: 'beginner',
         scholarhipsAvailable: true,
-        bootcamp: bootcmp._id
+        bootcamp: bootcampInDb._id
       });
       await course.save();
 
@@ -373,7 +392,7 @@ describe('/api/v1/courses', () => {
       newTuition = 2;
       newMinimumSkill = 'advanced';
       newScholarhipsAvailable = false;
-      newBootcamp = newBootcmp._id;
+      newBootcamp = newBootcampInDb._id;
     });
 
     it('should return 404 if no course with the given id exists', async () => {

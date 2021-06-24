@@ -135,4 +135,50 @@ describe('/api/v1/courses', () => {
       ).toBeTruthy();
     });
   });
+
+  describe('GET /:id', () => {
+    it('should return 400 if invalid id is passed', async () => {
+      const res = await request(server).get('/api/v1/courses/1');
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 if no course with the given id exists', async () => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const res = await request(server).get(`/api/v1/courses/${id}`);
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should return a course if valid id is passed', async () => {
+      const bootcamp = new Bootcamp({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      await bootcamp.save();
+      const bootcampId = bootcamp._id;
+
+      const course = new Course({
+        title: 'Course 1',
+        description: 'Course description 1',
+        weeks: 1,
+        tuition: 1,
+        minimumSkill: 'beginner',
+        scholarhipsAvailable: true,
+        bootcamp: bootcampId
+      });
+      await course.save();
+
+      const res = await request(server).get(`/api/v1/courses/${course._id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveProperty('title', course.title);
+    });
+  });
 });

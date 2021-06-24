@@ -1,6 +1,7 @@
 const Course = require('../models/Course');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const Bootcamp = require('../models/Bootcamp');
 
 // @desc Get all courses
 // @route GET /api/v1/courses
@@ -44,6 +45,26 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`Course with id ${req.params.id} was not found`, 404)
     );
+
+  res.json({ success: true, data: course });
+});
+
+// @desc Create new course
+// @route POST /api/v1/bootcamps/:bootcampId/courses
+// @access Private
+exports.createCourse = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId;
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+
+  if (!bootcamp)
+    return next(
+      new ErrorResponse(
+        `Bootcamp with id ${req.params.bootcampId} was not found`,
+        404
+      )
+    );
+
+  const course = await Course.create(req.body);
 
   res.json({ success: true, data: course });
 });

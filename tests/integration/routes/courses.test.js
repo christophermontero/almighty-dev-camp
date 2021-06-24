@@ -329,28 +329,6 @@ describe('/api/v1/courses', () => {
     };
 
     beforeEach(async () => {
-      // const bootcmp = new Bootcamp({
-      //   name: 'Bootcamp 1',
-      //   description: 'Bootcamp description 1',
-      //   website: 'https://bootcamp1.com',
-      //   phone: '(111) 111-1111',
-      //   email: 'boot1@email.com',
-      //   address: 'Boot address 1',
-      //   careers: ['Web Development']
-      // });
-      // await bootcmp.save();
-
-      // const newBootcmp = new Bootcamp({
-      //   name: 'New bootcamp',
-      //   description: 'New bootcamp description',
-      //   website: 'https://newbootcamp.com',
-      //   phone: '(222) 222-2222',
-      //   email: 'newboot@email.com',
-      //   address: 'New boot address',
-      //   careers: ['Web Development']
-      // });
-      // await newBootcmp.save();
-
       await Bootcamp.collection.insertMany([
         {
           name: 'Bootcamp 1',
@@ -483,6 +461,79 @@ describe('/api/v1/courses', () => {
       expect(res.body.data).toHaveProperty('tuition', newTuition);
       expect(res.body.data).toHaveProperty('minimumSkill', newMinimumSkill);
       expect(res.body.data).toHaveProperty('bootcamp', newBootcamp.toString());
+    });
+  });
+
+  describe('DELETE /:id', () => {
+    let course, id;
+
+    const exec = () => {
+      return request(server).delete(`/api/v1/courses/${id}`);
+    };
+
+    beforeEach(async () => {
+      await Bootcamp.collection.insertOne({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development']
+      });
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+
+      course = new Course({
+        title: 'Course 1',
+        description: 'Course description 1',
+        weeks: '1',
+        tuition: 1,
+        minimumSkill: 'beginner',
+        scholarhipsAvailable: true,
+        bootcamp: bootcampInDb._id
+      });
+      await course.save();
+
+      id = course._id;
+    });
+
+    it('should return 400 if invalid id is passed', async () => {
+      id = '1';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 if course with the given id was not found', async () => {
+      id = mongoose.Types.ObjectId();
+
+      const res = await exec();
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should delete the course if input is valid', async () => {
+      await exec();
+
+      const courseInDb = await Course.findById(id);
+
+      expect(courseInDb).toBeNull();
+    });
+
+    it('should return the remove course', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toHaveProperty('_id');
+      expect(res.body.data).toHaveProperty('title', course.title);
+      expect(res.body.data).toHaveProperty('description', course.description);
+      expect(res.body.data).toHaveProperty('weeks', course.weeks);
+      expect(res.body.data).toHaveProperty('tuition', course.tuition);
+      expect(res.body.data).toHaveProperty('minimumSkill', course.minimumSkill);
+      expect(res.body.data).toHaveProperty(
+        'bootcamp',
+        course.bootcamp.toString()
+      );
     });
   });
 });

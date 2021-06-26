@@ -11,6 +11,15 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
   let query;
 
   if (req.params.bootcampId) {
+    const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+    if (!bootcamp)
+      return next(
+        new ErrorResponse(
+          `Bootcamp with id ${req.params.bootcampId} was not found`,
+          404
+        )
+      );
+
     query = Course.find({ bootcamp: req.params.bootcampId });
   } else {
     query = Course.find().populate({
@@ -20,14 +29,6 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
   }
 
   const courses = await query;
-
-  if (courses.length === 0)
-    return next(
-      new ErrorResponse(
-        `Bootcamp with id ${req.params.bootcampId} was not found`,
-        404
-      )
-    );
 
   res.json({ success: true, count: courses.length, data: courses });
 });

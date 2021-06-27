@@ -1,7 +1,9 @@
 const express = require('express');
+const path = require('path');
 require('dotenv').config({ path: './config/config.env' });
 const morgan = require('morgan');
 const errorHandler = require('./middleware/error');
+const fileupload = require('express-fileupload');
 require('colors');
 
 // Routes
@@ -17,6 +19,12 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// File uploading
+app.use(fileupload());
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Body parser
 app.use(express.json());

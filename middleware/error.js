@@ -11,10 +11,6 @@ module.exports = (err, req, res, next) => {
 
   // Mongoose invalid Object Id
   if (err.name === 'CastError') {
-    if (err.errors) {
-      error.message = Object.values(err.errors).map((e) => e.message);
-    }
-
     error = new ErrorResponse(error.message, 400);
   }
 

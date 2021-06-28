@@ -231,6 +231,23 @@ describe('/api/v1/bootcamps', () => {
       expect(res.status).toBe(400);
     });
 
+    it('should return 400 if bootcamp name is duplicate', async () => {
+      await Bootcamp.collection.insertOne({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development'],
+        averageCost: 10000
+      });
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
     it('should save the bootcamp if it is invalid', async () => {
       await exec();
 

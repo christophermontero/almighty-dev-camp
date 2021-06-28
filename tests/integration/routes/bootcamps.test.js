@@ -1,4 +1,6 @@
 require('dotenv').config({ path: './config/config.env' });
+const fs = require('fs');
+const path = require('path');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const Bootcamp = require('../../../models/Bootcamp');
@@ -22,7 +24,7 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('GET /', () => {
-    it('should return all bootcamps', async () => {
+    beforeEach(async () => {
       await Bootcamp.collection.insertMany([
         {
           name: 'Bootcamp 1',
@@ -31,7 +33,8 @@ describe('/api/v1/bootcamps', () => {
           phone: '(111) 111-1111',
           email: 'boot1@email.com',
           address: 'Boot address 1',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          averageCost: 10000
         },
         {
           name: 'Bootcamp 2',
@@ -40,10 +43,13 @@ describe('/api/v1/bootcamps', () => {
           phone: '(222) 222-2222',
           email: 'boot2@email.com',
           address: 'Boot address 2',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          averageCost: 5000
         }
       ]);
+    });
 
+    it('should return all bootcamps', async () => {
       const res = await request(server).get('/api/v1/bootcamps');
 
       expect(res.status).toBe(200);
@@ -54,6 +60,63 @@ describe('/api/v1/bootcamps', () => {
       expect(
         res.body.data.some((bootcamp) => bootcamp.name === 'Bootcamp 2')
       ).toBeTruthy();
+    });
+
+    it('should select just the name from all bootcamps', async () => {
+      const res = await request(server).get('/api/v1/bootcamps?select=name');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.every((bootcamp) => bootcamp.name)).toBeTruthy();
+      expect(
+        res.body.data.every((bootcamp) => bootcamp.description)
+      ).toBeFalsy();
+    });
+
+    it('should query the results using mongo operators', async () => {
+      const res = await request(server).get(
+        '/api/v1/bootcamps?averageCost[gte]=8000'
+      );
+
+      expect(res.status).toBe(200);
+      expect(
+        res.body.data.every((bootcamp) => bootcamp.averageCost >= 8000)
+      ).toBeTruthy();
+    });
+
+    it('should sort ascending the results by name', async () => {
+      const res = await request(server).get('/api/v1/bootcamps?sort=name');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data[0].name).toBe('Bootcamp 1');
+      expect(res.body.data[1].name).toBe('Bootcamp 2');
+    });
+
+    it('should add the previous page to pagination', async () => {
+      const pagination = {
+        prev: {
+          page: 1,
+          limit: 1
+        }
+      };
+
+      const res = await request(server).get('/api/v1/bootcamps?page=2&limit=1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination).toMatchObject(pagination);
+    });
+
+    it('should add the next page to pagination', async () => {
+      const pagination = {
+        next: {
+          page: 2,
+          limit: 1
+        }
+      };
+
+      const res = await request(server).get('/api/v1/bootcamps?page=1&limit=1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination).toMatchObject(pagination);
     });
   });
 
@@ -73,24 +136,25 @@ describe('/api/v1/bootcamps', () => {
     });
 
     it('should return a bootcamp if valid id is passed', async () => {
-      const bootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        averageCost: 10000
       });
-      await bootcamp.save();
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       const res = await request(server).get(
-        `/api/v1/bootcamps/${bootcamp._id}`
+        `/api/v1/bootcamps/${bootcampInDb._id}`
       );
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveProperty('_id');
-      expect(res.body.data).toHaveProperty('name', bootcamp.name);
+      expect(res.body.data).toHaveProperty('name', bootcampInDb.name);
     });
   });
 
@@ -236,7 +300,7 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('PUT /:id', () => {
-    let bootcamp,
+    let bootcampInDb,
       id,
       newName,
       newDescription,
@@ -265,18 +329,19 @@ describe('/api/v1/bootcamps', () => {
     };
 
     beforeEach(async () => {
-      bootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        averageCost: 10000
       });
-      await bootcamp.save();
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      id = bootcamp._id;
+      id = bootcampInDb._id;
       newName = 'new Bootcamp';
       newDescription = 'new Bootcamp description';
       newWebsite = 'https://new-bootcamp.com';
@@ -365,7 +430,6 @@ describe('/api/v1/bootcamps', () => {
       expect(bootcampInDb).toHaveProperty('phone', newPhone);
       expect(bootcampInDb).toHaveProperty('email', newEmail);
       expect(bootcampInDb.createdAt).toBeDefined();
-      expect(bootcampInDb.address).toBeUndefined();
       expect(bootcampInDb.careers).toEqual(expect.arrayContaining(newCareers));
       expect(bootcampInDb).toHaveProperty('location');
       expect(bootcampInDb).toHaveProperty('slug');
@@ -386,10 +450,7 @@ describe('/api/v1/bootcamps', () => {
       expect(res.body.data).toHaveProperty('phone', newPhone);
       expect(res.body.data).toHaveProperty('email', newEmail);
       expect(res.body.data.createdAt).toBeDefined();
-      expect(res.body.data.address).toBeUndefined();
       expect(res.body.data.careers).toEqual(expect.arrayContaining(newCareers));
-      expect(res.body.data).toHaveProperty('location');
-      expect(res.body.data).toHaveProperty('slug');
       expect(res.body.data).toHaveProperty('photo', 'no-photo.jpg');
       expect(res.body.data.housing).toBeTruthy();
       expect(res.body.data.jobAssistance).toBeTruthy();
@@ -398,26 +459,104 @@ describe('/api/v1/bootcamps', () => {
     });
   });
 
-  describe('DELETE /:id', () => {
-    let bootcamp, id;
+  describe('PUT /:id/photo', () => {
+    let bootcampInDb, id, filePath;
 
-    const exec = () => {
-      return request(server).delete(`/api/v1/bootcamps/${id}`);
-    };
+    beforeAll(() => {
+      if (!fs.existsSync(__dirname + '/uploads')) {
+        fs.mkdir(__dirname + '/uploads', { recursive: true }, (err) => {
+          if (err) throw err;
+        });
+      }
+    });
 
     beforeEach(async () => {
-      bootcamp = new Bootcamp({
+      await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
         description: 'Bootcamp description 1',
         website: 'https://bootcamp1.com',
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        averageCost: 10000
       });
-      await bootcamp.save();
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      id = bootcamp._id;
+      id = bootcampInDb._id;
+      filePath = './images/photo.jpg';
+    });
+
+    afterAll(() => {
+      fs.rmdir(__dirname + '/uploads', { recursive: true }, (err) => {
+        if (err) throw err;
+      });
+    });
+
+    const exec = () => {
+      return request(server)
+        .put(`/api/v1/bootcamps/${id}/photo`)
+        .attach('file', path.resolve(__dirname, filePath));
+    };
+
+    it('should return 400 if invalid id is passed', async () => {
+      id = '1';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if image file is not provided', async () => {
+      const res = await request(server).put(`/api/v1/bootcamps/${id}/photo`);
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if upload is not an image', async () => {
+      filePath = './images/nonphoto.txt';
+
+      const res = await exec();
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 404 if bootcamp with the given id was not found', async () => {
+      id = mongoose.Types.ObjectId();
+
+      const res = await exec();
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should return the photo file name if it is valid', async () => {
+      const res = await exec();
+
+      expect(res.body.data).toBe(`photo_${id}.jpg`);
+    });
+  });
+
+  describe('DELETE /:id', () => {
+    let bootcampInDb, id;
+
+    const exec = () => {
+      return request(server).delete(`/api/v1/bootcamps/${id}`);
+    };
+
+    beforeEach(async () => {
+      await Bootcamp.collection.insertOne({
+        name: 'Bootcamp 1',
+        description: 'Bootcamp description 1',
+        website: 'https://bootcamp1.com',
+        phone: '(111) 111-1111',
+        email: 'boot1@email.com',
+        address: 'Boot address 1',
+        careers: ['Web Development'],
+        averageCost: 10000
+      });
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+
+      id = bootcampInDb._id;
     });
 
     it('should return 400 if invalid id is passed', async () => {
@@ -448,14 +587,17 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.body.data).toHaveProperty('_id');
-      expect(res.body.data).toHaveProperty('name', bootcamp.name);
-      expect(res.body.data).toHaveProperty('description', bootcamp.description);
-      expect(res.body.data).toHaveProperty('website', bootcamp.website);
-      expect(res.body.data).toHaveProperty('phone', bootcamp.phone);
-      expect(res.body.data).toHaveProperty('email', bootcamp.email);
-      expect(res.body.data).toHaveProperty('address', bootcamp.address);
+      expect(res.body.data).toHaveProperty('name', bootcampInDb.name);
+      expect(res.body.data).toHaveProperty(
+        'description',
+        bootcampInDb.description
+      );
+      expect(res.body.data).toHaveProperty('website', bootcampInDb.website);
+      expect(res.body.data).toHaveProperty('phone', bootcampInDb.phone);
+      expect(res.body.data).toHaveProperty('email', bootcampInDb.email);
+      expect(res.body.data).toHaveProperty('address', bootcampInDb.address);
       expect(res.body.data.careers).toEqual(
-        expect.arrayContaining(bootcamp.careers)
+        expect.arrayContaining(bootcampInDb.careers)
       );
     });
   });

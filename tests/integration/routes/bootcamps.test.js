@@ -22,7 +22,7 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('GET /', () => {
-    it('should return all bootcamps', async () => {
+    beforeEach(async () => {
       await Bootcamp.collection.insertMany([
         {
           name: 'Bootcamp 1',
@@ -31,7 +31,8 @@ describe('/api/v1/bootcamps', () => {
           phone: '(111) 111-1111',
           email: 'boot1@email.com',
           address: 'Boot address 1',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          averageCost: 10000
         },
         {
           name: 'Bootcamp 2',
@@ -40,10 +41,13 @@ describe('/api/v1/bootcamps', () => {
           phone: '(222) 222-2222',
           email: 'boot2@email.com',
           address: 'Boot address 2',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          averageCost: 5000
         }
       ]);
+    });
 
+    it('should return all bootcamps', async () => {
       const res = await request(server).get('/api/v1/bootcamps');
 
       expect(res.status).toBe(200);
@@ -54,6 +58,63 @@ describe('/api/v1/bootcamps', () => {
       expect(
         res.body.data.some((bootcamp) => bootcamp.name === 'Bootcamp 2')
       ).toBeTruthy();
+    });
+
+    it('should select just the name from all bootcamps', async () => {
+      const res = await request(server).get('/api/v1/bootcamps?select=name');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.every((bootcamp) => bootcamp.name)).toBeTruthy();
+      expect(
+        res.body.data.every((bootcamp) => bootcamp.description)
+      ).toBeFalsy();
+    });
+
+    it('should query the results using mongo operators', async () => {
+      const res = await request(server).get(
+        '/api/v1/bootcamps?averageCost[gte]=8000'
+      );
+
+      expect(res.status).toBe(200);
+      expect(
+        res.body.data.every((bootcamp) => bootcamp.averageCost >= 8000)
+      ).toBeTruthy();
+    });
+
+    it('should sort ascending the results by name', async () => {
+      const res = await request(server).get('/api/v1/bootcamps?sort=name');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data[0].name).toBe('Bootcamp 1');
+      expect(res.body.data[1].name).toBe('Bootcamp 2');
+    });
+
+    it('should add the previous page to pagination', async () => {
+      const pagination = {
+        prev: {
+          page: 1,
+          limit: 1
+        }
+      };
+
+      const res = await request(server).get('/api/v1/bootcamps?page=2&limit=1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination).toMatchObject(pagination);
+    });
+
+    it('should add the next page to pagination', async () => {
+      const pagination = {
+        next: {
+          page: 2,
+          limit: 1
+        }
+      };
+
+      const res = await request(server).get('/api/v1/bootcamps?page=1&limit=1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination).toMatchObject(pagination);
     });
   });
 

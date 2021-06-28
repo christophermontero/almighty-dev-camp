@@ -462,6 +462,14 @@ describe('/api/v1/bootcamps', () => {
   describe('PUT /:id/photo', () => {
     let bootcampInDb, id, filePath;
 
+    beforeAll(() => {
+      if (!fs.existsSync(__dirname + '/uploads')) {
+        fs.mkdir(__dirname + '/uploads', { recursive: true }, (err) => {
+          if (err) throw err;
+        });
+      }
+    });
+
     beforeEach(async () => {
       await Bootcamp.collection.insertOne({
         name: 'Bootcamp 1',
@@ -480,14 +488,8 @@ describe('/api/v1/bootcamps', () => {
     });
 
     afterAll(() => {
-      fs.readdir(__dirname + '/uploads', (err, files) => {
+      fs.rmdir(__dirname + '/uploads', { recursive: true }, (err) => {
         if (err) throw err;
-
-        for (const file of files) {
-          fs.unlink(path.join(__dirname, '/uploads', file), (err) => {
-            if (err) throw err;
-          });
-        }
       });
     });
 

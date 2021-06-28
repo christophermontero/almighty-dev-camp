@@ -128,13 +128,13 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
       if (err) {
         return next(new ErrorResponse(`Problem with file upload`, 500));
       }
-
-      await Bootcamp.findByIdAndUpdate(
-        req.params.id,
-        { photo: file.name },
-        { new: true, runValidators: true }
-      );
     }
+  );
+
+  await Bootcamp.findByIdAndUpdate(
+    req.params.id,
+    { photo: file.name },
+    { new: true, runValidators: true }
   );
 
   res.json({ success: true, data: file.name });

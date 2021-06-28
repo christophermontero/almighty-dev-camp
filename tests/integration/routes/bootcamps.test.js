@@ -529,6 +529,17 @@ describe('/api/v1/bootcamps', () => {
       expect(res.status).toBe(404);
     });
 
+    it('should upload the photo if it is valid', async () => {
+      await exec();
+
+      const bootcampInDb = await Bootcamp.findById(id);
+
+      expect(bootcampInDb).toHaveProperty(
+        'photo',
+        `photo_${bootcampInDb._id}.jpg`
+      );
+    });
+
     it('should return the photo file name if it is valid', async () => {
       const res = await exec();
 

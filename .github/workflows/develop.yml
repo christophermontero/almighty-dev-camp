@@ -2,7 +2,7 @@ name: CI-almighty-devcamp
 
 on:
   pull_request:
-    branches: develop
+    branches: [develop]
 
 jobs:
   build:
@@ -39,4 +39,6 @@ jobs:
           MONGO_URI_TEST: mongodb://localhost/almightyCamperTestDB
           GEOCODER_PROVIDER: ${{ secrets.GEOCODER_PROVIDER }}
           GEOCODER_API_KEY: ${{ secrets.GEOCODER_API_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRE: 1d
           CI: true

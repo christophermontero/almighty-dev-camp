@@ -240,7 +240,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if title is no provided', async () => {
+    it('should return 400 if title is not provided', async () => {
       title = '';
 
       const res = await exec();
@@ -248,7 +248,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if description is no provided', async () => {
+    it('should return 400 if description is not provided', async () => {
       description = '';
 
       const res = await exec();
@@ -256,7 +256,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if week is no provided', async () => {
+    it('should return 400 if week is not provided', async () => {
       weeks = '';
 
       const res = await exec();
@@ -264,7 +264,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if tuition is no provided', async () => {
+    it('should return 400 if tuition is not provided', async () => {
       tuition = null;
 
       const res = await exec();
@@ -397,7 +397,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if title is no provided', async () => {
+    it('should return 400 if title is not provided', async () => {
       newTitle = '';
 
       const res = await exec();
@@ -405,7 +405,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if description is no provided', async () => {
+    it('should return 400 if description is not provided', async () => {
       newDescription = '';
 
       const res = await exec();
@@ -413,7 +413,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if week is no provided', async () => {
+    it('should return 400 if week is not provided', async () => {
       newWeeks = '';
 
       const res = await exec();
@@ -421,7 +421,7 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 400 if tuition is no provided', async () => {
+    it('should return 400 if tuition is not provided', async () => {
       newTuition = null;
 
       const res = await exec();

@@ -35,12 +35,13 @@ exports.login = asyncHandler(async (req, res, next) => {
   // Check for user
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user) return next(new ErrorResponse('Invalid credentials', 401));
+  if (!user) return next(new ErrorResponse('Invalid credentials email', 401));
 
   // Check if password matches
   const isMatch = await user.matchPassword(password);
 
-  if (!isMatch) return next(new ErrorResponse('Invalid credentials', 401));
+  if (!isMatch)
+    return next(new ErrorResponse('Invalid credentials password', 401));
 
   // Create token
   const token = user.getSignedJwtToken();

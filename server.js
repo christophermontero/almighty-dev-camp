@@ -9,6 +9,7 @@ require('colors');
 // Routes
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
+const auth = require('./routes/auth');
 
 // Connect to DB
 require('./config/db')();
@@ -32,6 +33,7 @@ app.use(express.json());
 // Mount routes
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

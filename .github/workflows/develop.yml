@@ -42,4 +42,5 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           TEST_FILE_UPLOAD_PATH: ./tests/integration/controllers/uploads
           JWT_EXPIRE: 1d
+          JWT_COOKIE_EXPIRE: 1
           CI: true

@@ -4,6 +4,7 @@ require('dotenv').config({ path: './config/config.env' });
 const morgan = require('morgan');
 const errorHandler = require('./middleware/error');
 const fileupload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 require('colors');
 
 // Routes
@@ -29,6 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Body parser
 app.use(express.json());
+// Cookie parser
+app.use(cookieParser());
 
 // Mount routes
 app.use('/api/v1/bootcamps', bootcamps);

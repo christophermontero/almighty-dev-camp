@@ -1,6 +1,7 @@
 require('dotenv').config({ path: './config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
+const User = require('../../../models/User');
 const Course = require('../../../models/Course');
 const Bootcamp = require('../../../models/Bootcamp');
 let server;
@@ -179,7 +180,8 @@ describe('/api/v1/courses', () => {
   });
 
   describe('POST /bootcamps/:bootcampId/courses', () => {
-    let title,
+    let token,
+      title,
       description,
       weeks,
       tuition,
@@ -191,6 +193,7 @@ describe('/api/v1/courses', () => {
     const exec = () => {
       return request(server)
         .post(`/api/v1/bootcamps/${bootcampId}/courses`)
+        .set('authorization', `Bearer ${token}`)
         .send({
           title,
           description,
@@ -214,6 +217,7 @@ describe('/api/v1/courses', () => {
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
+      token = new User().getSignedJwtToken();
       title = 'Course 1';
       description = 'Course description 1';
       weeks = '1';
@@ -222,6 +226,14 @@ describe('/api/v1/courses', () => {
       scholarhipsAvailable = true;
       bootcamp = bootcampInDb._id;
       bootcampId = bootcampInDb._id;
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 404 if no bootcamp with the given id exists', async () => {
@@ -306,7 +318,8 @@ describe('/api/v1/courses', () => {
   });
 
   describe('PUT /:id', () => {
-    let course,
+    let token,
+      course,
       id,
       newTitle,
       newDescription,
@@ -317,15 +330,18 @@ describe('/api/v1/courses', () => {
       newBootcamp;
 
     const exec = () => {
-      return request(server).put(`/api/v1/courses/${id}`).send({
-        title: newTitle,
-        description: newDescription,
-        weeks: newWeeks,
-        tuition: newTuition,
-        minimumSkill: newMinimumSkill,
-        scholarhipsAvailable: newScholarhipsAvailable,
-        bootcamp: newBootcamp
-      });
+      return request(server)
+        .put(`/api/v1/courses/${id}`)
+        .set('authorization', `Bearer ${token}`)
+        .send({
+          title: newTitle,
+          description: newDescription,
+          weeks: newWeeks,
+          tuition: newTuition,
+          minimumSkill: newMinimumSkill,
+          scholarhipsAvailable: newScholarhipsAvailable,
+          bootcamp: newBootcamp
+        });
     };
 
     beforeEach(async () => {
@@ -363,6 +379,7 @@ describe('/api/v1/courses', () => {
       });
       await course.save();
 
+      token = new User().getSignedJwtToken();
       id = course._id;
       newTitle = 'new Course';
       newDescription = 'new course description';
@@ -371,6 +388,14 @@ describe('/api/v1/courses', () => {
       newMinimumSkill = 'advanced';
       newScholarhipsAvailable = false;
       newBootcamp = newBootcampInDb._id;
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 404 if no course with the given id exists', async () => {
@@ -465,10 +490,12 @@ describe('/api/v1/courses', () => {
   });
 
   describe('DELETE /:id', () => {
-    let course, id;
+    let token, course, id;
 
     const exec = () => {
-      return request(server).delete(`/api/v1/courses/${id}`);
+      return request(server)
+        .delete(`/api/v1/courses/${id}`)
+        .set('authorization', `Bearer ${token}`);
     };
 
     beforeEach(async () => {
@@ -494,7 +521,16 @@ describe('/api/v1/courses', () => {
       });
       await course.save();
 
+      token = new User().getSignedJwtToken();
       id = course._id;
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 400 if invalid id is passed', async () => {

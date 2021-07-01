@@ -1,6 +1,7 @@
 require('dotenv').config({ path: './config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const User = require('../../../models/User');
 let server;
 
@@ -19,6 +20,39 @@ describe('/api/v1/auth', () => {
   // Remove all data
   afterEach(async () => {
     await User.deleteMany({});
+  });
+
+  describe('GET /me', () => {
+    it('should return 401 if jwt is not valid', async () => {
+      const token = jwt.sign({ _id: '1' }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+      });
+
+      const res = await request(server)
+        .get('/api/v1/auth/me')
+        .set('authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return the user if it is valid', async () => {
+      const user = new User({
+        name: 'name 1',
+        email: 'test@email.com',
+        password: '12345678'
+      });
+      await user.save();
+      const token = user.getSignedJwtToken();
+
+      const res = await request(server)
+        .get('/api/v1/auth/me')
+        .set('authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveProperty('_id', user._id.toString());
+      expect(res.body.data).toHaveProperty('name', user.name);
+      expect(res.body.data).toHaveProperty('email', user.email);
+    });
   });
 
   describe('POST /register', () => {

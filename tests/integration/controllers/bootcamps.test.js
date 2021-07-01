@@ -4,6 +4,7 @@ const path = require('path');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const Bootcamp = require('../../../models/Bootcamp');
+const User = require('../../../models/User');
 let server;
 
 describe('/api/v1/bootcamps', () => {
@@ -159,21 +160,25 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('POST /', () => {
-    let name, description, website, phone, email, address, careers;
+    let token, name, description, website, phone, email, address, careers;
 
     const exec = () => {
-      return request(server).post('/api/v1/bootcamps').send({
-        name,
-        description,
-        website,
-        phone,
-        email,
-        address,
-        careers
-      });
+      return request(server)
+        .post('/api/v1/bootcamps')
+        .set('authorization', `Bearer ${token}`)
+        .send({
+          name,
+          description,
+          website,
+          phone,
+          email,
+          address,
+          careers
+        });
     };
 
     beforeEach(() => {
+      token = new User().getSignedJwtToken();
       name = 'Bootcamp 1';
       description = 'Bootcamp description 1';
       website = 'https://bootcamp1.com';
@@ -181,6 +186,14 @@ describe('/api/v1/bootcamps', () => {
       email = 'boot1@email.com';
       address = 'Boot address 1';
       careers = ['Web Development'];
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 400 if name is greater than 50 characters', async () => {
@@ -317,7 +330,8 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('PUT /:id', () => {
-    let bootcampInDb,
+    let token,
+      bootcampInDb,
       id,
       newName,
       newDescription,
@@ -331,18 +345,21 @@ describe('/api/v1/bootcamps', () => {
       newAcceptGi;
 
     const exec = () => {
-      return request(server).put(`/api/v1/bootcamps/${id}`).send({
-        name: newName,
-        description: newDescription,
-        website: newWebsite,
-        phone: newPhone,
-        email: newEmail,
-        careers: newCareers,
-        housing: newHousing,
-        jobAssistance: newJobAssistance,
-        jobGuarantee: newJobGuarantee,
-        acceptGi: newAcceptGi
-      });
+      return request(server)
+        .put(`/api/v1/bootcamps/${id}`)
+        .set('authorization', `Bearer ${token}`)
+        .send({
+          name: newName,
+          description: newDescription,
+          website: newWebsite,
+          phone: newPhone,
+          email: newEmail,
+          careers: newCareers,
+          housing: newHousing,
+          jobAssistance: newJobAssistance,
+          jobGuarantee: newJobGuarantee,
+          acceptGi: newAcceptGi
+        });
     };
 
     beforeEach(async () => {
@@ -358,6 +375,7 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
+      token = new User().getSignedJwtToken();
       id = bootcampInDb._id;
       newName = 'new Bootcamp';
       newDescription = 'new Bootcamp description';
@@ -369,6 +387,14 @@ describe('/api/v1/bootcamps', () => {
       newJobAssistance = true;
       newJobGuarantee = true;
       newAcceptGi = true;
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 400 if name is greater than 50 characters', async () => {
@@ -477,7 +503,7 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('PUT /:id/photo', () => {
-    let bootcampInDb, id, filePath;
+    let token, bootcampInDb, id, filePath;
 
     beforeAll(() => {
       if (!fs.existsSync(__dirname + '/uploads')) {
@@ -500,6 +526,7 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
+      token = new User().getSignedJwtToken();
       id = bootcampInDb._id;
       filePath = './images/photo.jpg';
     });
@@ -513,8 +540,17 @@ describe('/api/v1/bootcamps', () => {
     const exec = () => {
       return request(server)
         .put(`/api/v1/bootcamps/${id}/photo`)
+        .set('authorization', `Bearer ${token}`)
         .attach('file', path.resolve(__dirname, filePath));
     };
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
 
     it('should return 400 if invalid id is passed', async () => {
       id = '1';
@@ -525,7 +561,9 @@ describe('/api/v1/bootcamps', () => {
     });
 
     it('should return 400 if image file is not provided', async () => {
-      const res = await request(server).put(`/api/v1/bootcamps/${id}/photo`);
+      const res = await request(server)
+        .put(`/api/v1/bootcamps/${id}/photo`)
+        .set('authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(400);
     });
@@ -565,10 +603,12 @@ describe('/api/v1/bootcamps', () => {
   });
 
   describe('DELETE /:id', () => {
-    let bootcampInDb, id;
+    let token, bootcampInDb, id;
 
     const exec = () => {
-      return request(server).delete(`/api/v1/bootcamps/${id}`);
+      return request(server)
+        .delete(`/api/v1/bootcamps/${id}`)
+        .set('authorization', `Bearer ${token}`);
     };
 
     beforeEach(async () => {
@@ -584,7 +624,16 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
+      token = new User().getSignedJwtToken();
       id = bootcampInDb._id;
+    });
+
+    it('should return 401 if client is not logged in', async () => {
+      token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
     });
 
     it('should return 400 if invalid id is passed', async () => {

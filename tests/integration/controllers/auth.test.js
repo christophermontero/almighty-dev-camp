@@ -24,9 +24,7 @@ describe('/api/v1/auth', () => {
 
   describe('GET /me', () => {
     it('should return 401 if jwt is not valid', async () => {
-      const token = jwt.sign({ _id: '1' }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
-      });
+      const token = '';
 
       const res = await request(server)
         .get('/api/v1/auth/me')

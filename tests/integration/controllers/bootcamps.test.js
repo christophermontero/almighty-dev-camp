@@ -5,16 +5,36 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const Bootcamp = require('../../../models/Bootcamp');
 const User = require('../../../models/User');
+
 let server;
+let admin;
+let defaultUser;
 
 describe('/api/v1/bootcamps', () => {
-  // Start server
-  beforeAll(() => {
+  // Start server and create users to testing authorization
+  beforeAll(async () => {
     server = require('../../../server');
+
+    admin = new User({
+      name: 'admin',
+      email: 'admin@email.com',
+      password: '12345678',
+      role: 'publisher'
+    });
+    await admin.save();
+
+    defaultUser = new User({
+      name: 'default user',
+      email: 'defaultuser@email.com',
+      password: '12345678',
+      role: 'user'
+    });
+    await defaultUser.save();
   });
 
   // Close server and disconnect DB
   afterAll(async () => {
+    await User.deleteMany({});
     await server.close();
     await mongoose.disconnect();
   });
@@ -177,8 +197,8 @@ describe('/api/v1/bootcamps', () => {
         });
     };
 
-    beforeEach(() => {
-      token = new User().getSignedJwtToken();
+    beforeEach(async () => {
+      token = admin.getSignedJwtToken();
       name = 'Bootcamp 1';
       description = 'Bootcamp description 1';
       website = 'https://bootcamp1.com';
@@ -194,6 +214,14 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 400 if name is greater than 50 characters', async () => {
@@ -375,7 +403,7 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       id = bootcampInDb._id;
       newName = 'new Bootcamp';
       newDescription = 'new Bootcamp description';
@@ -395,6 +423,14 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 400 if name is greater than 50 characters', async () => {
@@ -526,7 +562,7 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       id = bootcampInDb._id;
       filePath = './images/photo.jpg';
     });
@@ -550,6 +586,14 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 400 if invalid id is passed', async () => {
@@ -624,7 +668,7 @@ describe('/api/v1/bootcamps', () => {
       });
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       id = bootcampInDb._id;
     });
 
@@ -634,6 +678,14 @@ describe('/api/v1/bootcamps', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 400 if invalid id is passed', async () => {

@@ -4,16 +4,36 @@ const mongoose = require('mongoose');
 const User = require('../../../models/User');
 const Course = require('../../../models/Course');
 const Bootcamp = require('../../../models/Bootcamp');
+
 let server;
+let admin;
+let defaultUser;
 
 describe('/api/v1/courses', () => {
-  // Start server
-  beforeAll(() => {
+  // Start server and create users to testing authorization
+  beforeAll(async () => {
     server = require('../../../server');
+
+    admin = new User({
+      name: 'admin',
+      email: 'admin@email.com',
+      password: '12345678',
+      role: 'publisher'
+    });
+    await admin.save();
+
+    defaultUser = new User({
+      name: 'default user',
+      email: 'defaultuser@email.com',
+      password: '12345678',
+      role: 'user'
+    });
+    await defaultUser.save();
   });
 
   // Close server and disconnect DB
   afterAll(async () => {
+    await User.deleteMany({});
     await server.close();
     await mongoose.disconnect();
   });
@@ -217,7 +237,7 @@ describe('/api/v1/courses', () => {
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       title = 'Course 1';
       description = 'Course description 1';
       weeks = '1';
@@ -234,6 +254,14 @@ describe('/api/v1/courses', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 404 if no bootcamp with the given id exists', async () => {
@@ -379,7 +407,7 @@ describe('/api/v1/courses', () => {
       });
       await course.save();
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       id = course._id;
       newTitle = 'new Course';
       newDescription = 'new course description';
@@ -396,6 +424,14 @@ describe('/api/v1/courses', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 404 if no course with the given id exists', async () => {
@@ -521,7 +557,7 @@ describe('/api/v1/courses', () => {
       });
       await course.save();
 
-      token = new User().getSignedJwtToken();
+      token = admin.getSignedJwtToken();
       id = course._id;
     });
 
@@ -531,6 +567,14 @@ describe('/api/v1/courses', () => {
       const res = await exec();
 
       expect(res.status).toBe(401);
+    });
+
+    it('should return 403 if user is not an admin', async () => {
+      token = defaultUser.getSignedJwtToken();
+
+      const res = await exec();
+
+      expect(res.status).toBe(403);
     });
 
     it('should return 400 if invalid id is passed', async () => {

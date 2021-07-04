@@ -53,7 +53,8 @@ describe('/api/v1/courses', () => {
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        user: admin._id
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -65,7 +66,8 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampInDb._id
+          bootcamp: bootcampInDb._id,
+          user: admin._id
         },
         {
           title: 'Course 2',
@@ -74,7 +76,8 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampInDb._id
+          bootcamp: bootcampInDb._id,
+          user: admin._id
         }
       ]);
 
@@ -114,7 +117,8 @@ describe('/api/v1/courses', () => {
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        user: admin._id
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -126,7 +130,8 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampInDb._id
+          bootcamp: bootcampInDb._id,
+          user: admin._id
         },
         {
           title: 'Course 2',
@@ -135,7 +140,8 @@ describe('/api/v1/courses', () => {
           tuition: 1,
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
-          bootcamp: bootcampInDb._id
+          bootcamp: bootcampInDb._id,
+          user: admin._id
         }
       ]);
 
@@ -177,7 +183,8 @@ describe('/api/v1/courses', () => {
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        user: admin._id
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -188,7 +195,8 @@ describe('/api/v1/courses', () => {
         tuition: 1,
         minimumSkill: 'beginner',
         scholarhipsAvailable: true,
-        bootcamp: bootcampInDb._id
+        bootcamp: bootcampInDb._id,
+        user: admin._id
       });
       await course.save();
 
@@ -221,21 +229,36 @@ describe('/api/v1/courses', () => {
           tuition,
           minimumSkill,
           scholarhipsAvailable,
-          bootcamp
+          bootcamp,
+          user: admin._id
         });
     };
 
     beforeEach(async () => {
-      await Bootcamp.collection.insertOne({
-        name: 'Bootcamp 1',
-        description: 'Bootcamp description 1',
-        website: 'https://bootcamp1.com',
-        phone: '(111) 111-1111',
-        email: 'boot1@email.com',
-        address: 'Boot address 1',
-        careers: ['Web Development']
-      });
-      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+      await Bootcamp.collection.insertMany([
+        {
+          name: 'Bootcamp 1',
+          description: 'Bootcamp description 1',
+          website: 'https://bootcamp1.com',
+          phone: '(111) 111-1111',
+          email: 'boot1@email.com',
+          address: 'Boot address 1',
+          careers: ['Web Development'],
+          user: admin._id
+        },
+        {
+          name: 'Bootcamp 2',
+          description: 'Bootcamp description 2',
+          website: 'https://bootcamp2.com',
+          phone: '(111) 111-1111',
+          email: 'boot2@email.com',
+          address: 'Boot address 2',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: defaultUser._id
+        }
+      ]);
+      let bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       token = admin.getSignedJwtToken();
       title = 'Course 1';
@@ -250,6 +273,15 @@ describe('/api/v1/courses', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 2' });
+      bootcampId = bootcampInDb._id;
 
       const res = await exec();
 
@@ -381,7 +413,8 @@ describe('/api/v1/courses', () => {
           phone: '(111) 111-1111',
           email: 'boot1@email.com',
           address: 'Boot address 1',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          user: admin._id
         },
         {
           name: 'New bootcamp',
@@ -390,22 +423,36 @@ describe('/api/v1/courses', () => {
           phone: '(222) 222-2222',
           email: 'newboot@email.com',
           address: 'New boot address',
-          careers: ['Web Development']
+          careers: ['Web Development'],
+          user: admin._id
         }
       ]);
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
       const newBootcampInDb = await Bootcamp.findOne({ name: 'New bootcamp' });
 
-      course = new Course({
-        title: 'Course 1',
-        description: 'Course description 1',
-        weeks: '1',
-        tuition: 1,
-        minimumSkill: 'beginner',
-        scholarhipsAvailable: true,
-        bootcamp: bootcampInDb._id
-      });
-      await course.save();
+      await Course.collection.insertMany([
+        {
+          title: 'Course 1',
+          description: 'Course description 1',
+          weeks: '1',
+          tuition: 1,
+          minimumSkill: 'beginner',
+          scholarhipsAvailable: true,
+          bootcamp: bootcampInDb._id,
+          user: admin._id
+        },
+        {
+          title: 'Course 2',
+          description: 'Course description 2',
+          weeks: '1',
+          tuition: 1,
+          minimumSkill: 'beginner',
+          scholarhipsAvailable: true,
+          bootcamp: bootcampInDb._id,
+          user: defaultUser._id
+        }
+      ]);
+      course = await Course.findOne({ title: 'Course 1' });
 
       token = admin.getSignedJwtToken();
       id = course._id;
@@ -420,6 +467,15 @@ describe('/api/v1/courses', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      course = await Course.findOne({ title: 'Course 2' });
+      id = course._id;
 
       const res = await exec();
 
@@ -542,20 +598,34 @@ describe('/api/v1/courses', () => {
         phone: '(111) 111-1111',
         email: 'boot1@email.com',
         address: 'Boot address 1',
-        careers: ['Web Development']
+        careers: ['Web Development'],
+        user: admin._id
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
-      course = new Course({
-        title: 'Course 1',
-        description: 'Course description 1',
-        weeks: '1',
-        tuition: 1,
-        minimumSkill: 'beginner',
-        scholarhipsAvailable: true,
-        bootcamp: bootcampInDb._id
-      });
-      await course.save();
+      await Course.collection.insertMany([
+        {
+          title: 'Course 1',
+          description: 'Course description 1',
+          weeks: '1',
+          tuition: 1,
+          minimumSkill: 'beginner',
+          scholarhipsAvailable: true,
+          bootcamp: bootcampInDb._id,
+          user: admin._id
+        },
+        {
+          title: 'Course 2',
+          description: 'Course description 2',
+          weeks: '1',
+          tuition: 1,
+          minimumSkill: 'beginner',
+          scholarhipsAvailable: true,
+          bootcamp: bootcampInDb._id,
+          user: defaultUser._id
+        }
+      ]);
+      course = await Course.findOne({ title: 'Course 1' });
 
       token = admin.getSignedJwtToken();
       id = course._id;
@@ -563,6 +633,15 @@ describe('/api/v1/courses', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      course = await Course.findOne({ title: 'Course 2' });
+      id = course._id;
 
       const res = await exec();
 

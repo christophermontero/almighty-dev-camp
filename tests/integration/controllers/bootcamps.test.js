@@ -409,16 +409,30 @@ describe('/api/v1/bootcamps', () => {
     };
 
     beforeEach(async () => {
-      await Bootcamp.collection.insertOne({
-        name: 'Bootcamp 1',
-        description: 'Bootcamp description 1',
-        website: 'https://bootcamp1.com',
-        phone: '(111) 111-1111',
-        email: 'boot1@email.com',
-        address: 'Boot address 1',
-        careers: ['Web Development'],
-        averageCost: 10000
-      });
+      await Bootcamp.collection.insertMany([
+        {
+          name: 'Bootcamp 1',
+          description: 'Bootcamp description 1',
+          website: 'https://bootcamp1.com',
+          phone: '(111) 111-1111',
+          email: 'boot1@email.com',
+          address: 'Boot address 1',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: admin._id
+        },
+        {
+          name: 'Bootcamp 2',
+          description: 'Bootcamp description 2',
+          website: 'https://bootcamp2.com',
+          phone: '(111) 111-1111',
+          email: 'boot2@email.com',
+          address: 'Boot address 2',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: defaultUser._id
+        }
+      ]);
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       token = admin.getSignedJwtToken();
@@ -437,6 +451,15 @@ describe('/api/v1/bootcamps', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 2' });
+      id = bootcampInDb._id;
 
       const res = await exec();
 
@@ -568,16 +591,30 @@ describe('/api/v1/bootcamps', () => {
     });
 
     beforeEach(async () => {
-      await Bootcamp.collection.insertOne({
-        name: 'Bootcamp 1',
-        description: 'Bootcamp description 1',
-        website: 'https://bootcamp1.com',
-        phone: '(111) 111-1111',
-        email: 'boot1@email.com',
-        address: 'Boot address 1',
-        careers: ['Web Development'],
-        averageCost: 10000
-      });
+      await Bootcamp.collection.insertMany([
+        {
+          name: 'Bootcamp 1',
+          description: 'Bootcamp description 1',
+          website: 'https://bootcamp1.com',
+          phone: '(111) 111-1111',
+          email: 'boot1@email.com',
+          address: 'Boot address 1',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: admin._id
+        },
+        {
+          name: 'Bootcamp 2',
+          description: 'Bootcamp description 2',
+          website: 'https://bootcamp2.com',
+          phone: '(111) 111-1111',
+          email: 'boot2@email.com',
+          address: 'Boot address 2',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: defaultUser._id
+        }
+      ]);
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       token = admin.getSignedJwtToken();
@@ -600,6 +637,15 @@ describe('/api/v1/bootcamps', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 2' });
+      id = bootcampInDb._id;
 
       const res = await exec();
 
@@ -674,16 +720,30 @@ describe('/api/v1/bootcamps', () => {
     };
 
     beforeEach(async () => {
-      await Bootcamp.collection.insertOne({
-        name: 'Bootcamp 1',
-        description: 'Bootcamp description 1',
-        website: 'https://bootcamp1.com',
-        phone: '(111) 111-1111',
-        email: 'boot1@email.com',
-        address: 'Boot address 1',
-        careers: ['Web Development'],
-        averageCost: 10000
-      });
+      await Bootcamp.collection.insertMany([
+        {
+          name: 'Bootcamp 1',
+          description: 'Bootcamp description 1',
+          website: 'https://bootcamp1.com',
+          phone: '(111) 111-1111',
+          email: 'boot1@email.com',
+          address: 'Boot address 1',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: admin._id
+        },
+        {
+          name: 'Bootcamp 2',
+          description: 'Bootcamp description 2',
+          website: 'https://bootcamp2.com',
+          phone: '(111) 111-1111',
+          email: 'boot2@email.com',
+          address: 'Boot address 2',
+          careers: ['Web Development'],
+          averageCost: 10000,
+          user: defaultUser._id
+        }
+      ]);
       bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       token = admin.getSignedJwtToken();
@@ -692,6 +752,15 @@ describe('/api/v1/bootcamps', () => {
 
     it('should return 401 if client is not logged in', async () => {
       token = '';
+
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 401 if user is not the bootcamp owner', async () => {
+      bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 2' });
+      id = bootcampInDb._id;
 
       const res = await exec();
 

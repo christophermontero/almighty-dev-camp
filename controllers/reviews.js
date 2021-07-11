@@ -9,16 +9,16 @@ const Bootcamp = require('../models/Bootcamp');
 // @access Public
 exports.getReviews = asyncHandler(async (req, res, next) => {
   if (req.params.bootcampId) {
-    const reviews = await Review.findById(req.params.bootcampId);
+    const reviews = await Review.find({ bootcamp: req.params.bootcampId });
 
-    if (!reviews) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp with id ${req.params.bootcampId} was not found`,
-          404,
-        ),
-      );
-    }
+    // if (!reviews) {
+    //   return next(
+    //     new ErrorResponse(
+    //       `Bootcamp with id ${req.params.bootcampId} was not found`,
+    //       404,
+    //     ),
+    //   );
+    // }
 
     return res.json({ success: true, count: reviews.length, data: reviews });
   }

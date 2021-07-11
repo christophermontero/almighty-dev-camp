@@ -18,7 +18,7 @@ describe('/api/v1/courses', () => {
       name: 'admin',
       email: 'admin@email.com',
       password: '12345678',
-      role: 'publisher'
+      role: 'publisher',
     });
     await admin.save();
 
@@ -26,7 +26,7 @@ describe('/api/v1/courses', () => {
       name: 'default user',
       email: 'defaultuser@email.com',
       password: '12345678',
-      role: 'user'
+      role: 'user',
     });
     await defaultUser.save();
   });
@@ -54,7 +54,7 @@ describe('/api/v1/courses', () => {
         email: 'boot1@email.com',
         address: 'Boot address 1',
         careers: ['Web Development'],
-        user: admin._id
+        user: admin._id,
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -67,7 +67,7 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
+          user: admin._id,
         },
         {
           title: 'Course 2',
@@ -77,8 +77,8 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
-        }
+          user: admin._id,
+        },
       ]);
 
       const res = await request(server).get('/api/v1/courses');
@@ -86,10 +86,10 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.length).toBe(2);
       expect(
-        res.body.data.some((course) => course.title === 'Course 1')
+        res.body.data.some((course) => course.title === 'Course 1'),
       ).toBeTruthy();
       expect(
-        res.body.data.some((course) => course.title === 'Course 2')
+        res.body.data.some((course) => course.title === 'Course 2'),
       ).toBeTruthy();
     });
   });
@@ -97,14 +97,14 @@ describe('/api/v1/courses', () => {
   describe('GET /bootcamps/:bootcampId/courses', () => {
     it('should return 404 if bootcamp does not exists', async () => {
       const res = await request(server).get(
-        `/api/v1/bootcamps/${mongoose.Types.ObjectId()}/courses`
+        `/api/v1/bootcamps/${mongoose.Types.ObjectId()}/courses`,
       );
 
       expect(res.status).toBe(404);
     });
 
     it('should return 400 if invalid id is passed', async () => {
-      const res = await request(server).get(`/api/v1/bootcamps/1/courses`);
+      const res = await request(server).get('/api/v1/bootcamps/1/courses');
 
       expect(res.status).toBe(400);
     });
@@ -118,7 +118,7 @@ describe('/api/v1/courses', () => {
         email: 'boot1@email.com',
         address: 'Boot address 1',
         careers: ['Web Development'],
-        user: admin._id
+        user: admin._id,
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -131,7 +131,7 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
+          user: admin._id,
         },
         {
           title: 'Course 2',
@@ -141,21 +141,21 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
-        }
+          user: admin._id,
+        },
       ]);
 
       const res = await request(server).get(
-        `/api/v1/bootcamps/${bootcampInDb._id}/courses`
+        `/api/v1/bootcamps/${bootcampInDb._id}/courses`,
       );
 
       expect(res.status).toBe(200);
       expect(res.body.data.length).toBe(2);
       expect(
-        res.body.data.some((course) => course.title === 'Course 1')
+        res.body.data.some((course) => course.title === 'Course 1'),
       ).toBeTruthy();
       expect(
-        res.body.data.some((course) => course.title === 'Course 2')
+        res.body.data.some((course) => course.title === 'Course 2'),
       ).toBeTruthy();
     });
   });
@@ -184,7 +184,7 @@ describe('/api/v1/courses', () => {
         email: 'boot1@email.com',
         address: 'Boot address 1',
         careers: ['Web Development'],
-        user: admin._id
+        user: admin._id,
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -196,7 +196,7 @@ describe('/api/v1/courses', () => {
         minimumSkill: 'beginner',
         scholarhipsAvailable: true,
         bootcamp: bootcampInDb._id,
-        user: admin._id
+        user: admin._id,
       });
       await course.save();
 
@@ -208,31 +208,29 @@ describe('/api/v1/courses', () => {
   });
 
   describe('POST /bootcamps/:bootcampId/courses', () => {
-    let token,
-      title,
-      description,
-      weeks,
-      tuition,
-      minimumSkill,
-      scholarhipsAvailable,
-      bootcamp,
-      bootcampId;
+    let token;
+    let title;
+    let description;
+    let weeks;
+    let tuition;
+    let minimumSkill;
+    let scholarhipsAvailable;
+    let bootcamp;
+    let bootcampId;
 
-    const exec = () => {
-      return request(server)
-        .post(`/api/v1/bootcamps/${bootcampId}/courses`)
-        .set('authorization', `Bearer ${token}`)
-        .send({
-          title,
-          description,
-          weeks,
-          tuition,
-          minimumSkill,
-          scholarhipsAvailable,
-          bootcamp,
-          user: admin._id
-        });
-    };
+    const exec = () => request(server)
+      .post(`/api/v1/bootcamps/${bootcampId}/courses`)
+      .set('authorization', `Bearer ${token}`)
+      .send({
+        title,
+        description,
+        weeks,
+        tuition,
+        minimumSkill,
+        scholarhipsAvailable,
+        bootcamp,
+        user: admin._id,
+      });
 
     beforeEach(async () => {
       await Bootcamp.collection.insertMany([
@@ -244,7 +242,7 @@ describe('/api/v1/courses', () => {
           email: 'boot1@email.com',
           address: 'Boot address 1',
           careers: ['Web Development'],
-          user: admin._id
+          user: admin._id,
         },
         {
           name: 'Bootcamp 2',
@@ -255,10 +253,10 @@ describe('/api/v1/courses', () => {
           address: 'Boot address 2',
           careers: ['Web Development'],
           averageCost: 10000,
-          user: defaultUser._id
-        }
+          user: defaultUser._id,
+        },
       ]);
-      let bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
+      const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
       token = admin.getSignedJwtToken();
       title = 'Course 1';
@@ -296,13 +294,14 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(403);
     });
 
-    it('should return 404 if no bootcamp with the given id exists', async () => {
-      bootcampId = mongoose.Types.ObjectId();
+    it('should return 404 if no bootcamp with the given id exists',
+      async () => {
+        bootcampId = mongoose.Types.ObjectId();
 
-      const res = await exec();
+        const res = await exec();
 
-      expect(res.status).toBe(404);
-    });
+        expect(res.status).toBe(404);
+      });
 
     it('should return 400 if invalid bootcamp id is passed', async () => {
       bootcampId = '1';
@@ -367,7 +366,7 @@ describe('/api/v1/courses', () => {
       expect(res.body.data).toHaveProperty('title', 'Course 1');
       expect(res.body.data).toHaveProperty(
         'description',
-        'Course description 1'
+        'Course description 1',
       );
       expect(res.body.data).toHaveProperty('weeks', '1');
       expect(res.body.data).toHaveProperty('tuition', 1);
@@ -378,31 +377,29 @@ describe('/api/v1/courses', () => {
   });
 
   describe('PUT /:id', () => {
-    let token,
-      course,
-      id,
-      newTitle,
-      newDescription,
-      newWeeks,
-      newTuition,
-      newMinimumSkill,
-      newScholarhipsAvailable,
-      newBootcamp;
+    let token;
+    let course;
+    let id;
+    let newTitle;
+    let newDescription;
+    let newWeeks;
+    let newTuition;
+    let newMinimumSkill;
+    let newScholarhipsAvailable;
+    let newBootcamp;
 
-    const exec = () => {
-      return request(server)
-        .put(`/api/v1/courses/${id}`)
-        .set('authorization', `Bearer ${token}`)
-        .send({
-          title: newTitle,
-          description: newDescription,
-          weeks: newWeeks,
-          tuition: newTuition,
-          minimumSkill: newMinimumSkill,
-          scholarhipsAvailable: newScholarhipsAvailable,
-          bootcamp: newBootcamp
-        });
-    };
+    const exec = () => request(server)
+      .put(`/api/v1/courses/${id}`)
+      .set('authorization', `Bearer ${token}`)
+      .send({
+        title: newTitle,
+        description: newDescription,
+        weeks: newWeeks,
+        tuition: newTuition,
+        minimumSkill: newMinimumSkill,
+        scholarhipsAvailable: newScholarhipsAvailable,
+        bootcamp: newBootcamp,
+      });
 
     beforeEach(async () => {
       await Bootcamp.collection.insertMany([
@@ -414,7 +411,7 @@ describe('/api/v1/courses', () => {
           email: 'boot1@email.com',
           address: 'Boot address 1',
           careers: ['Web Development'],
-          user: admin._id
+          user: admin._id,
         },
         {
           name: 'New bootcamp',
@@ -424,8 +421,8 @@ describe('/api/v1/courses', () => {
           email: 'newboot@email.com',
           address: 'New boot address',
           careers: ['Web Development'],
-          user: admin._id
-        }
+          user: admin._id,
+        },
       ]);
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
       const newBootcampInDb = await Bootcamp.findOne({ name: 'New bootcamp' });
@@ -439,7 +436,7 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
+          user: admin._id,
         },
         {
           title: 'Course 2',
@@ -449,8 +446,8 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: defaultUser._id
-        }
+          user: defaultUser._id,
+        },
       ]);
       course = await Course.findOne({ title: 'Course 1' });
 
@@ -498,13 +495,14 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(404);
     });
 
-    it('should return 404 if no bootcamp with the given id exists', async () => {
-      newBootcamp = mongoose.Types.ObjectId();
+    it('should return 404 if no bootcamp with the given id exists',
+      async () => {
+        newBootcamp = mongoose.Types.ObjectId();
 
-      const res = await exec();
+        const res = await exec();
 
-      expect(res.status).toBe(404);
-    });
+        expect(res.status).toBe(404);
+      });
 
     it('should return 400 if invalid id is passed', async () => {
       id = '1';
@@ -582,13 +580,12 @@ describe('/api/v1/courses', () => {
   });
 
   describe('DELETE /:id', () => {
-    let token, course, id;
+    let token; let course; let
+      id;
 
-    const exec = () => {
-      return request(server)
-        .delete(`/api/v1/courses/${id}`)
-        .set('authorization', `Bearer ${token}`);
-    };
+    const exec = () => request(server)
+      .delete(`/api/v1/courses/${id}`)
+      .set('authorization', `Bearer ${token}`);
 
     beforeEach(async () => {
       await Bootcamp.collection.insertOne({
@@ -599,7 +596,7 @@ describe('/api/v1/courses', () => {
         email: 'boot1@email.com',
         address: 'Boot address 1',
         careers: ['Web Development'],
-        user: admin._id
+        user: admin._id,
       });
       const bootcampInDb = await Bootcamp.findOne({ name: 'Bootcamp 1' });
 
@@ -612,7 +609,7 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: admin._id
+          user: admin._id,
         },
         {
           title: 'Course 2',
@@ -622,8 +619,8 @@ describe('/api/v1/courses', () => {
           minimumSkill: 'beginner',
           scholarhipsAvailable: true,
           bootcamp: bootcampInDb._id,
-          user: defaultUser._id
-        }
+          user: defaultUser._id,
+        },
       ]);
       course = await Course.findOne({ title: 'Course 1' });
 
@@ -664,13 +661,14 @@ describe('/api/v1/courses', () => {
       expect(res.status).toBe(400);
     });
 
-    it('should return 404 if course with the given id was not found', async () => {
-      id = mongoose.Types.ObjectId();
+    it('should return 404 if course with the given id was not found',
+      async () => {
+        id = mongoose.Types.ObjectId();
 
-      const res = await exec();
+        const res = await exec();
 
-      expect(res.status).toBe(404);
-    });
+        expect(res.status).toBe(404);
+      });
 
     it('should delete the course if input is valid', async () => {
       await exec();
@@ -691,7 +689,7 @@ describe('/api/v1/courses', () => {
       expect(res.body.data).toHaveProperty('minimumSkill', course.minimumSkill);
       expect(res.body.data).toHaveProperty(
         'bootcamp',
-        course.bootcamp.toString()
+        course.bootcamp.toString(),
       );
     });
   });

@@ -11,20 +11,20 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
   if (req.params.bootcampId) {
     const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
-    if (!bootcamp)
+    if (!bootcamp) {
       return next(
         new ErrorResponse(
           `Bootcamp with id ${req.params.bootcampId} was not found`,
-          404
-        )
+          404,
+        ),
       );
+    }
 
     const courses = await Course.find({ bootcamp: req.params.bootcampId });
 
     return res.json({ success: true, count: courses.length, data: courses });
-  } else {
-    return res.json(res.advancedResults);
   }
+  return res.json(res.advancedResults);
 });
 
 // @desc Get single course
@@ -33,13 +33,14 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 exports.getCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.findById(req.params.id).populate({
     path: 'bootcamp',
-    select: 'name description'
+    select: 'name description',
   });
 
-  if (!course)
+  if (!course) {
     return next(
-      new ErrorResponse(`Course with id ${req.params.id} was not found`, 404)
+      new ErrorResponse(`Course with id ${req.params.id} was not found`, 404),
     );
+  }
 
   res.json({ success: true, data: course });
 });
@@ -52,22 +53,24 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
   req.body.user = req.user.id;
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
-  if (!bootcamp)
+  if (!bootcamp) {
     return next(
       new ErrorResponse(
         `Bootcamp with id ${req.params.bootcampId} was not found`,
-        404
-      )
+        404,
+      ),
     );
+  }
 
   // Make sure user is bootcamp owner
-  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin')
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to create a course to ${bootcamp._id}`,
-        401
-      )
+        401,
+      ),
     );
+  }
 
   const course = await Course.create(req.body);
 
@@ -80,33 +83,36 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
 exports.updateCourse = asyncHandler(async (req, res, next) => {
   let course = await Course.findById(req.params.id);
 
-  if (!course)
+  if (!course) {
     return next(
-      new ErrorResponse(`Course with id ${req.params.id} was not found`, 404)
+      new ErrorResponse(`Course with id ${req.params.id} was not found`, 404),
     );
+  }
 
   const bootcamp = await Bootcamp.findById(req.body.bootcamp);
 
-  if (!bootcamp)
+  if (!bootcamp) {
     return next(
       new ErrorResponse(
         `Bootcamp with id ${req.body.bootcamp} was not found`,
-        404
-      )
+        404,
+      ),
     );
+  }
 
   // Make sure user is bootcamp owner
-  if (course.user.toString() !== req.user.id && req.user.role !== 'admin')
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to update a course ${course._id}`,
-        401
-      )
+        401,
+      ),
     );
+  }
 
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   res.json({ success: true, data: course });
@@ -118,22 +124,24 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.findById(req.params.id);
 
-  if (!course)
+  if (!course) {
     return next(
       new ErrorResponse(
         `Bootcamp with id ${req.body.bootcamp} was not found`,
-        404
-      )
+        404,
+      ),
     );
+  }
 
   // Make sure user is bootcamp owner
-  if (course.user.toString() !== req.user.id && req.user.role !== 'admin')
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
     return next(
       new ErrorResponse(
         `User ${req.user.id} is not authorized to delete a course ${course._id}`,
-        401
-      )
+        401,
+      ),
     );
+  }
 
   await course.remove();
 

@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const {
   getBootcamps,
@@ -7,7 +8,7 @@ const {
   createBootcamp,
   updateBootcamp,
   deleteBootcamp,
-  bootcampPhotoUpload
+  bootcampPhotoUpload,
 } = require('../controllers/bootcamps');
 
 const Bootcamp = require('../models/Bootcamp');

@@ -3,6 +3,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../../../models/User');
+
 let server;
 
 describe('/api/v1/auth', () => {
@@ -37,7 +38,7 @@ describe('/api/v1/auth', () => {
       const user = new User({
         name: 'name 1',
         email: 'test@email.com',
-        password: '12345678'
+        password: '12345678',
       });
       await user.save();
       const token = user.getSignedJwtToken();
@@ -54,16 +55,15 @@ describe('/api/v1/auth', () => {
   });
 
   describe('POST /register', () => {
-    let name, email, password, role;
+    let name; let email; let password; let
+      role;
 
-    const exec = () => {
-      return request(server).post('/api/v1/auth/register').send({
-        name,
-        email,
-        password,
-        role
-      });
-    };
+    const exec = () => request(server).post('/api/v1/auth/register').send({
+      name,
+      email,
+      password,
+      role,
+    });
 
     beforeEach(() => {
       name = 'name 1';
@@ -129,20 +129,19 @@ describe('/api/v1/auth', () => {
   });
 
   describe('POST /login', () => {
-    let email, password;
+    let email; let
+      password;
 
-    const exec = () => {
-      return request(server).post('/api/v1/auth/login').send({
-        email,
-        password
-      });
-    };
+    const exec = () => request(server).post('/api/v1/auth/login').send({
+      email,
+      password,
+    });
 
     beforeEach(async () => {
       const user = new User({
         name: 'name 1',
         email: 'test@email.com',
-        password: '12345678'
+        password: '12345678',
       });
       await user.save();
 
@@ -186,7 +185,7 @@ describe('/api/v1/auth', () => {
       const res = await exec();
 
       const user = await User.findOne({ email: 'test@email.com' }).select(
-        '+password'
+        '+password',
       );
 
       expect(res.status).toBe(200);

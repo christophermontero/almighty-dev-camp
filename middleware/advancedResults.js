@@ -16,7 +16,7 @@ module.exports = (model, populate) => async (req, res, next) => {
   // Create operators ($gt, $gte, so on)
   queryString = queryString.replace(
     /\b(gt|gte|lt|lte|in)\b/g,
-    (match) => `$${match}`
+    (match) => `$${match}`,
   );
 
   // Finding resource
@@ -58,14 +58,14 @@ module.exports = (model, populate) => async (req, res, next) => {
   if (endIndex < total) {
     pagination.next = {
       page: page + 1,
-      limit
+      limit,
     };
   }
 
   if (startIndex > 0) {
     pagination.prev = {
       page: page - 1,
-      limit
+      limit,
     };
   }
 
@@ -73,7 +73,7 @@ module.exports = (model, populate) => async (req, res, next) => {
     success: true,
     count: results.length,
     pagination,
-    data: results
+    data: results,
   };
 
   next();

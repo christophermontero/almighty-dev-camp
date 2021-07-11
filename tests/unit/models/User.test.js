@@ -1,8 +1,8 @@
 require('dotenv').config({ path: './config/config.env' });
-const User = require('../../../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const User = require('../../../models/User');
 
 describe('getSignedJwtToken', () => {
   it('should return a valid JWT', () => {
@@ -22,7 +22,7 @@ describe('getSignedJwtToken', () => {
 
     const payload = {
       _id: new mongoose.Types.ObjectId().toHexString(),
-      password: passwordHashed
+      password: passwordHashed,
     };
 
     const user = new User(payload);

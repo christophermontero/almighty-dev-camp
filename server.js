@@ -2,9 +2,9 @@ const express = require('express');
 const path = require('path');
 require('dotenv').config({ path: './config/config.env' });
 const morgan = require('morgan');
-const errorHandler = require('./middleware/error');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middleware/error');
 require('colors');
 
 // Routes
@@ -47,7 +47,7 @@ const server = app.listen(PORT, () => {
   if (process.env.NODE_ENV !== 'test') {
     console.log(
       `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
-        .bold
+        .bold,
     );
   }
 });

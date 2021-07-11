@@ -1,11 +1,12 @@
 const express = require('express');
+
 const router = express.Router({ mergeParams: true });
 const {
   getCourses,
   getCourse,
   createCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
 } = require('../controllers/courses');
 
 const Course = require('../models/Course');
@@ -18,9 +19,9 @@ router
   .get(
     advancedResults(Course, {
       path: 'bootcamp',
-      select: 'name description'
+      select: 'name description',
     }),
-    getCourses
+    getCourses,
   )
   .post(protect, authorize('publisher', 'admin'), createCourse);
 

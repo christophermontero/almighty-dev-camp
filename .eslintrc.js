@@ -21,7 +21,7 @@ module.exports = {
     'consistent-return': 0,
     'no-useless-escape': 0,
     'no-return-await': 0,
-    'prefer-destructuring': 1,
+    'func-names': 0,
     'max-len': [
       'error',
       {

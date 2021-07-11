@@ -1,36 +1,36 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const ReviewSchema = new mongoose.Schema({
   title: {
     type: String,
     trim: true,
     required: [true, 'Please add a course title'],
-    maxlength: 50,
+    maxlength: 50
   },
   text: {
     type: String,
-    required: [true, 'Please add a text'],
+    required: [true, 'Please add a text']
   },
   rating: {
     type: Number,
     min: 1,
     max: 10,
-    required: [true, 'Please add a rating between 1 and 10'],
+    required: [true, 'Please add a rating between 1 and 10']
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   bootcamp: {
     type: mongoose.Schema.ObjectId,
     ref: 'Bootcamp',
-    required: true,
+    required: true
   },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    required: true,
-  },
-});
+    required: true
+  }
+})
 
-module.exports = mongoose.model('Review', ReviewSchema);
+module.exports = mongoose.model('Review', ReviewSchema)

@@ -1,4 +1,5 @@
 const asyncHandler = require('../middleware/async')
+const ErrorResponse = require('../utils/errorResponse')
 const Review = require('../models/Review')
 
 // @desc Get all reviews
@@ -9,16 +10,30 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
   if (req.params.bootcampId) {
     const reviews = await Review.find({ bootcamp: req.params.bootcampId })
 
-    // if (!reviews) {
-    //   return next(
-    //     new ErrorResponse(
-    //       `Bootcamp with id ${req.params.bootcampId} was not found`,
-    //       404,
-    //     ),
-    //   );
-    // }
-
     return res.json({ success: true, count: reviews.length, data: reviews })
   }
   return res.json(res.advancedResults)
+})
+
+// @desc Get single review
+// @route GET /api/v1/reviews/:id
+// @access Public
+exports.getReview = asyncHandler(async (req, res, next) => {
+  const review = await Review.findById(req.params.id).populate({
+    path: 'bootcamp',
+    select: 'name description'
+  })
+
+  if (!review) {
+    return next(
+      new ErrorResponse(`Review with id ${req.params.id} was not found`,
+        404
+      )
+    )
+  };
+
+  res.json({
+    success: true,
+    data: review
+  })
 })

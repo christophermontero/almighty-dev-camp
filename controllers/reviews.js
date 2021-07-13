@@ -1,6 +1,7 @@
 const asyncHandler = require('../middleware/async')
 const ErrorResponse = require('../utils/errorResponse')
 const Review = require('../models/Review')
+const Bootcamp = require('../models/Bootcamp')
 
 // @desc Get all reviews
 // @route GET /api/v1/reviews
@@ -31,6 +32,31 @@ exports.getReview = asyncHandler(async (req, res, next) => {
       )
     )
   };
+
+  res.json({
+    success: true,
+    data: review
+  })
+})
+
+// @desc Add review
+// @route POST /api/v1/bootcamps/:bootcampId/reviews
+// @access Private
+exports.createReview = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId
+  req.body.user = req.user.id
+
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId)
+
+  if (!bootcamp) {
+    return next(new ErrorResponse(
+      `Bootcamp with id ${req.params.id} was not found`,
+      404
+    )
+    )
+  }
+
+  const review = await Review.create(req.body)
 
   res.json({
     success: true,

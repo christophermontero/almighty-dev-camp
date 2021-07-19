@@ -1,10 +1,10 @@
-require('dotenv').config({ path: './config/config.env' });
+require('dotenv').config({ path: './src/config/config.env' });
 const fs = require('fs');
 const path = require('path');
 const request = require('supertest');
 const mongoose = require('mongoose');
-const Bootcamp = require('../../../models/Bootcamp');
-const User = require('../../../models/User');
+const Bootcamp = require('../../../src/models/Bootcamp');
+const User = require('../../../src/models/User');
 
 let server;
 let admin;

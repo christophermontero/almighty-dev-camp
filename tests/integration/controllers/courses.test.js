@@ -1,9 +1,9 @@
-require('dotenv').config({ path: './config/config.env' });
+require('dotenv').config({ path: './src/config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
-const User = require('../../../models/User');
-const Course = require('../../../models/Course');
-const Bootcamp = require('../../../models/Bootcamp');
+const User = require('../../../src/models/User');
+const Course = require('../../../src/models/Course');
+const Bootcamp = require('../../../src/models/Bootcamp');
 
 let server;
 let admin;

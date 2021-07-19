@@ -1,8 +1,8 @@
-require('dotenv').config({ path: './config/config.env' });
+require('dotenv').config({ path: './src/config/config.env' });
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const User = require('../../../models/User');
+const User = require('../../../src/models/User');
 
 describe('getSignedJwtToken', () => {
   it('should return a valid JWT', () => {

@@ -1,7 +1,7 @@
-require('dotenv').config({ path: './config/config.env' });
+require('dotenv').config({ path: './src/config/config.env' });
 const request = require('supertest');
 const mongoose = require('mongoose');
-const User = require('../../../models/User');
+const User = require('../../../src/models/User');
 
 let server;
 

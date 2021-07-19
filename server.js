@@ -1,21 +1,23 @@
 const express = require('express')
 const path = require('path')
-require('dotenv').config({ path: './config/config.env' })
+require('dotenv').config({ path: './src/config/config.env' })
 const morgan = require('morgan')
 const fileupload = require('express-fileupload')
 const cookieParser = require('cookie-parser')
-const errorHandler = require('./middleware/error')
+const errorHandler = require('./src/middleware/error')
+const mongoSanitize = require('express-mongo-sanitize')
+
 require('colors')
 
 // Routes
-const bootcamps = require('./routes/bootcamps')
-const courses = require('./routes/courses')
-const auth = require('./routes/auth')
-const users = require('./routes/users')
-const reviews = require('./routes/reviews')
+const bootcamps = require('./src/routes/bootcamps')
+const courses = require('./src/routes/courses')
+const auth = require('./src/routes/auth')
+const users = require('./src/routes/users')
+const reviews = require('./src/routes/reviews')
 
 // Connect to DB
-require('./config/db')()
+require('./src/config/db')()
 
 const app = express()
 
@@ -26,6 +28,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // File uploading
 app.use(fileupload())
+
+// Sanitize data
+app.use(mongoSanitize())
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')))

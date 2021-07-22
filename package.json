@@ -2,7 +2,7 @@
   "name": "almighty-dev-camp",
   "version": "1.0.0",
   "description": "Backend API for the Almighty Devcamp application to manage bootcamps, courses, reviews and users",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server",
     "dev": "NODE_ENV=development nodemon server",

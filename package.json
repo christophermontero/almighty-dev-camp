@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node server",
     "dev": "NODE_ENV=development nodemon server",
     "test": "NODE_ENV=test jest --coverage --maxWorkers=1",
-    "lint": "eslint 'src/**/*.{js,ts,json}' --fix"
+    "lint": "eslint 'src/**/*.js' --fix"
   },
   "repository": {
     "type": "git",

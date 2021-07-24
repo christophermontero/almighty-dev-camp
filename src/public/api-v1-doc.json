@@ -539,6 +539,369 @@
           }
         ]
       }
+    },
+    "/api/v1/reviews": {
+      "get": {
+        "summary": "Fetch all reviews",
+        "tags": [
+          "Review"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/reviews"
+          }
+        },
+        "operationId": "get-all-reviews",
+        "description": "Fetch all reviews from database. Includes pagination, filtering and so on."
+      }
+    },
+    "/api/v1/bootcamps/{bootcampId}/reviews": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/bootcampId"
+        }
+      ],
+      "post": {
+        "summary": "Create a new review",
+        "operationId": "post-review",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "tags": [
+          "Review"
+        ],
+        "description": "Add new review to database for specific bootcamp. Must be authenticated and must be a user or admin.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              },
+              "examples": {
+                "review": {
+                  "$ref": "#/components/examples/review"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new Review."
+        }
+      }
+    },
+    "/api/v1/reviews/{reviewId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/reviewId"
+        }
+      ],
+      "get": {
+        "summary": "Fetch review",
+        "tags": [
+          "Review"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "operationId": "get-review",
+        "description": "Get single review by id."
+      },
+      "put": {
+        "summary": "Update review",
+        "operationId": "put-review",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "description": "Update single review in database.",
+        "tags": [
+          "Review"
+        ],
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          },
+          "description": "Request body for update a Review."
+        }
+      },
+      "delete": {
+        "summary": "Delete review",
+        "operationId": "delete-review",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "tags": [
+          "Review"
+        ],
+        "description": "Delete review from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "summary": "Create user",
+        "operationId": "post-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingField": {
+                    "value": {
+                      "success": false,
+                      "error": "Please add a name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Add new user to database. Must be authenticated and must be an admin.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "$ref": "#/components/examples/user"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new User."
+        }
+      },
+      "get": {
+        "summary": "Fetch all users",
+        "operationId": "get-all-users",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/users"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Fetch all users from database. Includes pagination, filtering and so on.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/userId"
+        }
+      ],
+      "get": {
+        "summary": "Fetch user",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "operationId": "get-user",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "description": "Get single user by id."
+      },
+      "put": {
+        "summary": "Update user",
+        "operationId": "put-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Update single user in database.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "description": "Request body for update a User."
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "operationId": "delete-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Delete user from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -546,16 +909,7 @@
       "Course": {
         "description": "Model to create a new Course.",
         "type": "object",
-        "x-examples": {
-          "course": {
-            "title": "IOS Development",
-            "description": "Get started building mobile applications.",
-            "weeks": 8,
-            "tuition": 6000,
-            "minimumSkill": "intermediate",
-            "scholarhipsAvailable": false
-          }
-        },
+        "x-examples": {},
         "properties": {
           "title": {
             "type": "string"
@@ -778,25 +1132,7 @@
       "Bootcamp": {
         "description": "Model to create a new Bootcamp.",
         "type": "object",
-        "x-examples": {
-          "bootcamp": {
-            "name": "Devcentral Bootcamp",
-            "description": "Is coding your passion?",
-            "website": "https://devcentral.com",
-            "phone": "(444) 444-4444",
-            "email": "enroll@devcentral.com",
-            "address": "233 Bay State Rd Boston MA 02215",
-            "careers": [
-              "Web Development",
-              "UI/UX",
-              "Business"
-            ],
-            "housing": false,
-            "jobAssistance": true,
-            "jobGuarantee": true,
-            "acceptGi": true
-          }
-        },
+        "x-examples": {},
         "properties": {
           "name": {
             "type": "string",
@@ -993,6 +1329,173 @@
             "type": "number"
           }
         }
+      },
+      "ReviewResponse": {
+        "description": "Response model to create new Review.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "bootcamp": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "__v": {
+            "type": "number"
+          }
+        },
+        "x-examples": {}
+      },
+      "ReviewsResponse": {
+        "description": "Response model to fetch all Reviews.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "bootcamp": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Review": {
+        "description": "Model to create a new Review.",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "title",
+          "text",
+          "rating"
+        ]
+      },
+      "UserResponse": {
+        "description": "Response model to create new User.",
+        "type": "object",
+        "x-examples": {
+          "user": {
+            "success": true,
+            "data": {
+              "role": "publisher",
+              "_id": "60fc42d680173b3e1159b218",
+              "name": "Al Pacino",
+              "password": "$2b$10$cPVnNSzEbbtYkur6MelQy.bJ7uaDbjsH49/5EjxL6cvIvTxeaO/de",
+              "email": "pacino@gmail.com",
+              "createdAt": "2021-07-24T16:41:58.974Z",
+              "__v": 0
+            }
+          }
+        },
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
+      },
+      "User": {
+        "description": "",
+        "type": "object",
+        "x-examples": {
+          "user": {
+            "role": "publisher",
+            "name": "Al Pacino",
+            "password": "12345678",
+            "email": "pacino@gmail.com"
+          }
+        },
+        "properties": {
+          "role": {
+            "type": "string",
+            "default": "user",
+            "enum": [
+              "user",
+              "publisher"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "name",
+          "password",
+          "email"
+        ]
       }
     },
     "securitySchemes": {
@@ -1084,6 +1587,26 @@
           "example": "5d725cfec4ded7bcb480eaa7"
         },
         "description": "Course identifier."
+      },
+      "reviewId": {
+        "name": "reviewId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "60fc3193868ac51df7e16fa6"
+        },
+        "description": "Review identifier."
+      },
+      "userId": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "60fc42d680173b3e1159b218"
+        },
+        "description": "User identificator"
       }
     },
     "examples": {
@@ -1115,6 +1638,21 @@
           "tuition": 6000,
           "minimumSkill": "intermediate",
           "scholarhipsAvailable": false
+        }
+      },
+      "review": {
+        "value": {
+          "title": "Nice bootcamp",
+          "text": "I learned a lot",
+          "rating": 10
+        }
+      },
+      "user": {
+        "value": {
+          "role": "publisher",
+          "name": "Al Pacino",
+          "password": "12345678",
+          "email": "pacino@gmail.com"
         }
       }
     },
@@ -1619,6 +2157,372 @@
             }
           }
         }
+      },
+      "reviews": {
+        "description": "Reviews response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewsResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "reviews": {
+                "value": {
+                  "success": true,
+                  "count": 2,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 2
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 2
+                    }
+                  },
+                  "data": [
+                    {
+                      "_id": "5d7a514b5d2c12c7449be024",
+                      "title": "Great overall experience",
+                      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "rating": 7,
+                      "bootcamp": {
+                        "_id": "5d725a037b292f5f8ceff787",
+                        "name": "Codemasters",
+                        "description": "Is coding your passion?"
+                      },
+                      "user": "5c8a1d5b0190b214360dc037",
+                      "createdAt": "2021-07-19T20:11:23.565Z",
+                      "__v": 0
+                    },
+                    {
+                      "_id": "5d7a514b5d2c12c7449be025",
+                      "title": "Not worth the money",
+                      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "rating": 5,
+                      "bootcamp": {
+                        "_id": "5d725a037b292f5f8ceff787",
+                        "name": "Codemasters",
+                        "description": "Is coding your passion?"
+                      },
+                      "user": "5c8a1d5b0190b214360dc038",
+                      "createdAt": "2021-07-19T20:11:23.565Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "review": {
+        "description": "Review creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            },
+            "examples": {
+              "review": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "_id": "60fc3193868ac51df7e16fa6",
+                    "title": "Nice bootcamp",
+                    "text": "I learned a lot",
+                    "rating": 10,
+                    "bootcamp": "5d725a1b7b292f5f8ceff788",
+                    "user": "5c8a1d5b0190b214360dc032",
+                    "createdAt": "2021-07-24T15:28:19.061Z",
+                    "__v": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingReview": {
+        "description": "Missed Review response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingReview": {
+                "value": {
+                  "success": false,
+                  "error": "Review with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongReviewId": {
+        "description": "Wrong Review id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongReviewId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"Review\""
+                }
+              }
+            }
+          }
+        }
+      },
+      "users": {
+        "description": "Users response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "type": "array",
+                  "uniqueItems": false,
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "users": {
+                "value": {
+                  "success": true,
+                  "count": 10,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 10
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 10
+                    }
+                  },
+                  "data": [
+                    {
+                      "role": "publisher",
+                      "_id": "60fc42d680173b3e1159b218",
+                      "name": "Al Pacino",
+                      "email": "pacino@gmail.com",
+                      "createdAt": "2021-07-24T16:41:58.974Z",
+                      "__v": 0
+                    },
+                    {
+                      "role": "user",
+                      "_id": "5c8a1d5b0190b214360dc040",
+                      "name": "Sara Kensing",
+                      "email": "sara@gmail.com",
+                      "createdAt": "2021-07-19T20:11:23.259Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "user": {
+        "description": "User creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "examples": {
+              "user": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "role": "publisher",
+                    "_id": "60fc42d680173b3e1159b218",
+                    "name": "Al Pacino",
+                    "password": "$2b$10$cPVnNSzEbbtYkur6MelQy.bJ7uaDbjsH49/5EjxL6cvIvTxeaO/de",
+                    "email": "pacino@gmail.com",
+                    "createdAt": "2021-07-24T16:41:58.974Z",
+                    "__v": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingUser": {
+        "description": "Missed User response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingUser": {
+                "value": {
+                  "success": false,
+                  "error": "User with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongUserId": {
+        "description": "Wrong User id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongUserId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"User\""
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -1633,6 +2537,12 @@
     },
     {
       "name": "Course"
+    },
+    {
+      "name": "Review"
+    },
+    {
+      "name": "User"
     }
   ]
 }

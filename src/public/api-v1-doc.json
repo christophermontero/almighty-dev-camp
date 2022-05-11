@@ -920,6 +920,128 @@
           }
         ]
       }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register a user",
+        "operationId": "post-register",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Add user to database with encrypted password.",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/registerUser"
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login a user",
+        "operationId": "post-login",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Login a user verifying his email and password.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/loginUser"
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "get": {
+        "summary": "Logout a user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/logout"
+          }
+        },
+        "operationId": "get-logout",
+        "description": "Logout a user to clear token from cookie.\n\n",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/updatepassword": {
+      "put": {
+        "summary": "Update user password",
+        "operationId": "put-updatepassword",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Update logged in user password.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/updatePassw"
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "summary": "Get user info",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/me"
+          }
+        },
+        "operationId": "get-me",
+        "description": "Get current user in the session."
+      }
+    },
+    "/api/v1/auth/updatedetails": {
+      "put": {
+        "summary": "Update user details",
+        "operationId": "put-updatedetails",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/me"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Update logged in user name and email.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/updateDetails"
+        }
+      }
     }
   },
   "components": {
@@ -1514,6 +1636,31 @@
           "password",
           "email"
         ]
+      },
+      "Me": {
+        "description": "",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -1689,6 +1836,39 @@
               "__v": 0
             }
           ]
+        }
+      },
+      "registerUserReq": {
+        "value": {
+          "name": "Richard Stalman",
+          "email": "stalman@email.com",
+          "password": "12345678",
+          "role": "user"
+        }
+      },
+      "token": {
+        "value": {
+          "success": true,
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.iBfEdH-2e5k14LWnTvIoXB9Ws674gQrwfjcQpLupdg"
+        }
+      },
+      "loginUser": {
+        "value": {
+          "email": "stallman@email.com",
+          "password": "12345678"
+        }
+      },
+      "me": {
+        "value": {
+          "success": true,
+          "data": {
+            "role": "user",
+            "_id": "627be0a16f6ca6747910981a",
+            "name": "Richard Stallman",
+            "email": "stallman@email.com",
+            "createdAt": "2022-05-11T16:13:21.862Z",
+            "__v": 0
+          }
         }
       }
     },
@@ -2607,6 +2787,268 @@
             }
           }
         }
+      },
+      "token": {
+        "description": "Auth token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjdiYjcwYTk0ZWQ4ODQ4NzZkOTJjZWMiLCJpYXQiOjE2NTIyNzQ5NTQsImV4cCI6MTY1MjM2MTM1NH0.iBfEdH-C2e5k14LWnTvIoXB9Ws674gQrwfjcQpLupdg"
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "auth-token": {
+                "$ref": "#/components/examples/token"
+              }
+            }
+          }
+        }
+      },
+      "logout": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "data": {}
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "type": "object"
+                }
+              }
+            },
+            "examples": {
+              "logout": {
+                "value": {
+                  "success": true,
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "me": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "data": {
+                    "role": "user",
+                    "_id": "627be0a16f6ca6747910981a",
+                    "name": "Richard Stallman",
+                    "email": "stallman@email.com",
+                    "createdAt": "2022-05-11T16:13:21.862Z",
+                    "__v": 0
+                  }
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "examples": {
+              "me-info": {
+                "$ref": "#/components/examples/me"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "registerUser": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "name": "Richard Stalman",
+                  "email": "stalman@email.com",
+                  "password": "12345678",
+                  "role": "user"
+                }
+              },
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "minLength": 8
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "publisher"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "email",
+                "password",
+                "role"
+              ]
+            },
+            "examples": {
+              "register-user": {
+                "$ref": "#/components/examples/registerUserReq"
+              }
+            }
+          }
+        },
+        "description": ""
+      },
+      "loginUser": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "email": "stalman@email.com",
+                  "password": "12345678"
+                }
+              },
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                }
+              },
+              "required": [
+                "email",
+                "password"
+              ]
+            },
+            "examples": {
+              "login": {
+                "$ref": "#/components/examples/loginUser"
+              }
+            }
+          }
+        }
+      },
+      "updatePassw": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "currentPassword": "12345678",
+                  "newPassword": "mySecurePassword"
+                }
+              },
+              "properties": {
+                "currentPassword": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                }
+              },
+              "required": [
+                "currentPassword",
+                "newPassword"
+              ]
+            },
+            "examples": {
+              "new-password": {
+                "value": {
+                  "currentPassword": "12345678",
+                  "newPassword": "mySecurePassword"
+                }
+              }
+            }
+          }
+        }
+      },
+      "updateDetails": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "name": "Kevin Mitnik",
+                  "email": "mitnik@gmail.com"
+                }
+              },
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "update-details": {
+                "value": {
+                  "name": "Richard Stallman",
+                  "email": "stallman@hotmail.com"
+                }
+              }
+            }
+          }
+        },
+        "description": ""
       }
     }
   },
@@ -2616,6 +3058,9 @@
     }
   ],
   "tags": [
+    {
+      "name": "Auth"
+    },
     {
       "name": "Bootcamp"
     },

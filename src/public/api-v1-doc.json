@@ -605,6 +605,24 @@
           },
           "description": "Request body for create a new Review."
         }
+      },
+      "get": {
+        "summary": "Fetch all review by bootcamp",
+        "operationId": "get-bootcamps-reviews",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/reviewsByBootcamp"
+          }
+        },
+        "description": "Fetch all reviews from database by bootcamp id.",
+        "tags": [
+          "Review"
+        ],
+        "security": [
+          {
+            "token": []
+          }
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}": {
@@ -1654,6 +1672,24 @@
           "password": "12345678",
           "email": "pacino@gmail.com"
         }
+      },
+      "reviewsByBootcamp": {
+        "value": {
+          "success": true,
+          "count": 1,
+          "data": [
+            {
+              "_id": "627bb71d94ed884876d92cf1",
+              "title": "Nice bootcamp 1",
+              "text": "I learned a lot",
+              "rating": 10,
+              "bootcamp": "627bb69c94ed884876d92ce7",
+              "user": "627bb70a94ed884876d92cec",
+              "createdAt": "2022-05-11T13:16:13.681Z",
+              "__v": 0
+            }
+          ]
+        }
       }
     },
     "responses": {
@@ -2519,6 +2555,54 @@
                   "success": false,
                   "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"User\""
                 }
+              }
+            }
+          }
+        }
+      },
+      "reviewsByBootcamp": {
+        "description": "Reviews by bootcamp",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "count": 1,
+                  "data": [
+                    {
+                      "_id": "627bb71d94ed884876d92cf1",
+                      "title": "Nice bootcamp 1",
+                      "text": "I learned a lot",
+                      "rating": 10,
+                      "bootcamp": "627bb69c94ed884876d92ce7",
+                      "user": "627bb70a94ed884876d92cec",
+                      "createdAt": "2022-05-11T13:16:13.681Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "reviews-by-bootcamp-id": {
+                "$ref": "#/components/examples/reviewsByBootcamp"
               }
             }
           }

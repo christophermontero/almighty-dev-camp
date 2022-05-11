@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-require('dotenv').config({ path: './src/config/config.env' });
+require('dotenv').config({ path: './src/config/.env' });
 const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');

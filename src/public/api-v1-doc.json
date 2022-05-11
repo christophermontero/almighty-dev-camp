@@ -1,0 +1,3077 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Almighty Devcamper",
+    "version": "1.0.0",
+    "description": "# Introduction\nBackend API for the Almighty Devcamp application to manage bootcamps, courses, reviews and users",
+    "contact": {
+      "name": "Christopher Ortiz Montero",
+      "email": "cgortizm21@gmail.com",
+      "url": "https://github.com/christophermontero"
+    },
+    "termsOfService": "http://swagger.io/terms",
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "development"
+    }
+  ],
+  "paths": {
+    "/api/v1/bootcamps": {
+      "parameters": [],
+      "get": {
+        "summary": "Fetch all bootcamps",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamps"
+          }
+        },
+        "operationId": "get-all-bootcamps",
+        "description": "Fetch all bootcamps from database. Includes pagination, filtering and so on.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/select"
+          },
+          {
+            "$ref": "#/components/parameters/sort"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          }
+        ],
+        "tags": [
+          "Bootcamp"
+        ]
+      },
+      "post": {
+        "summary": "Create a new bootcamp",
+        "operationId": "post-bootcamp",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamp"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingField": {
+                    "value": {
+                      "success": false,
+                      "error": "Please add a description"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "description": "Add new bootcamp to database. Must be authenticated and must be a publisher or admin.\n\n",
+        "tags": [
+          "Bootcamp"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bootcamp"
+              },
+              "examples": {
+                "bootcamp": {
+                  "$ref": "#/components/examples/bootcamp"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new Bootcamp."
+        }
+      }
+    },
+    "/api/v1/courses": {
+      "get": {
+        "summary": "Fetch all courses",
+        "tags": [
+          "Course"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/courses"
+          }
+        },
+        "operationId": "get-all-courses",
+        "description": "Fetch all courses from database. Includes pagination, filtering and so on.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/select"
+          },
+          {
+            "$ref": "#/components/parameters/sort"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/api/v1/bootcamps/{bootcampId}/courses": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/bootcampId"
+        }
+      ],
+      "post": {
+        "summary": "Create a new course",
+        "operationId": "post-course",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/course"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingField": {
+                    "value": {
+                      "success": false,
+                      "error": "Please add number of weeks"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "description": "Add new course to database. Must be authenticated and must be a publisher or admin.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "examples": {
+                "course": {
+                  "$ref": "#/components/examples/course"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new Course."
+        },
+        "tags": [
+          "Course"
+        ]
+      },
+      "get": {
+        "summary": "Fetch all courses by bootcamp",
+        "operationId": "get-courses-by-bootcamps",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/missingBootcamp"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "description": "Fetch all courses from database by bootcamp id.",
+        "tags": [
+          "Course"
+        ]
+      }
+    },
+    "/api/v1/bootcamps/{bootcampId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/bootcampId"
+        }
+      ],
+      "put": {
+        "summary": "Update bootcamp",
+        "operationId": "put-bootcamp",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamp"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "description": "Update single bootcamp in database.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bootcamp"
+              },
+              "examples": {
+                "bootcamp": {
+                  "$ref": "#/components/examples/bootcamp"
+                }
+              }
+            }
+          },
+          "description": "Request body for update a Bootcamp."
+        },
+        "tags": [
+          "Bootcamp"
+        ]
+      },
+      "get": {
+        "summary": "Fetch bootcamp",
+        "operationId": "get-bootcamp",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamp"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "description": "Get single bootcamp by id.",
+        "tags": [
+          "Bootcamp"
+        ]
+      },
+      "delete": {
+        "summary": "Delete bootcamp",
+        "operationId": "delete-bootcamp",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamp"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "tags": [
+          "Bootcamp"
+        ],
+        "description": "Delete bootcamp from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/api/v1/bootcamps/{bootcampId}/photo": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/bootcampId"
+        }
+      ],
+      "put": {
+        "summary": "Update photo",
+        "operationId": "put-bootcamps-photo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "photoUploaded": {
+                    "value": {
+                      "success": true,
+                      "data": "photo_60fb2738e49f6777a5be5bd5.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "fileMissing": {
+                    "value": {
+                      "success": false,
+                      "error": "Please upload a file"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "description": "Upload a bootcamp photo.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "tags": [
+          "Bootcamp"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              },
+              "examples": {}
+            }
+          },
+          "description": "Request body for update a Bootcamp photo."
+        }
+      }
+    },
+    "/api/v1/bootcamps/radius/{zipcode}/{distance}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/zipcode"
+        },
+        {
+          "$ref": "#/components/parameters/distance"
+        }
+      ],
+      "get": {
+        "summary": "Fetch bootcamp in radius",
+        "tags": [
+          "Bootcamp"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/bootcamps"
+          }
+        },
+        "operationId": "get-bootcamps-in-radius",
+        "description": "Fetch all bootcamps within a radius. Includes pagination, filtering and so on."
+      }
+    },
+    "/api/v1/courses/{courseId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/courseId"
+        }
+      ],
+      "put": {
+        "summary": "Update course",
+        "operationId": "put-course",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/course"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongCourseId"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingCourse"
+          }
+        },
+        "tags": [
+          "Course"
+        ],
+        "description": "Update single course in database.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "examples": {
+                "course": {
+                  "$ref": "#/components/examples/course"
+                }
+              }
+            }
+          },
+          "description": "Request body for update a Course."
+        }
+      },
+      "delete": {
+        "summary": "Delete course",
+        "operationId": "delete-course",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/course"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongCourseId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingCourse"
+          }
+        },
+        "tags": [
+          "Course"
+        ],
+        "description": "Delete course from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews": {
+      "get": {
+        "summary": "Fetch all reviews",
+        "tags": [
+          "Review"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/reviews"
+          }
+        },
+        "operationId": "get-all-reviews",
+        "description": "Fetch all reviews from database. Includes pagination, filtering and so on."
+      }
+    },
+    "/api/v1/bootcamps/{bootcampId}/reviews": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/bootcampId"
+        }
+      ],
+      "post": {
+        "summary": "Create a new review",
+        "operationId": "post-review",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongBootcampId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingBootcamp"
+          }
+        },
+        "tags": [
+          "Review"
+        ],
+        "description": "Add new review to database for specific bootcamp. Must be authenticated and must be a user or admin.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              },
+              "examples": {
+                "review": {
+                  "$ref": "#/components/examples/review"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new Review."
+        }
+      },
+      "get": {
+        "summary": "Fetch all review by bootcamp",
+        "operationId": "get-bootcamps-reviews",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/reviewsByBootcamp"
+          }
+        },
+        "description": "Fetch all reviews from database by bootcamp id.",
+        "tags": [
+          "Review"
+        ],
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{reviewId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/reviewId"
+        }
+      ],
+      "get": {
+        "summary": "Fetch review",
+        "tags": [
+          "Review"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "operationId": "get-review",
+        "description": "Get single review by id."
+      },
+      "put": {
+        "summary": "Update review",
+        "operationId": "put-review",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/review"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "description": "Update single review in database.",
+        "tags": [
+          "Review"
+        ],
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          },
+          "description": "Request body for update a Review."
+        }
+      },
+      "delete": {
+        "summary": "Delete review",
+        "operationId": "delete-review",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongReviewId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingReview"
+          }
+        },
+        "tags": [
+          "Review"
+        ],
+        "description": "Delete review from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "summary": "Create user",
+        "operationId": "post-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingField": {
+                    "value": {
+                      "success": false,
+                      "error": "Please add a name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Add new user to database. Must be authenticated and must be an admin.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "$ref": "#/components/examples/user"
+                }
+              }
+            }
+          },
+          "description": "Request body for create a new User."
+        }
+      },
+      "get": {
+        "summary": "Fetch all users",
+        "operationId": "get-all-users",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/users"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Fetch all users from database. Includes pagination, filtering and so on.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/{userId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/userId"
+        }
+      ],
+      "get": {
+        "summary": "Fetch user",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "operationId": "get-user",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "description": "Get single user by id."
+      },
+      "put": {
+        "summary": "Update user",
+        "operationId": "put-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Update single user in database.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "description": "Request body for update a User."
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "operationId": "delete-user",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/user"
+          },
+          "400": {
+            "$ref": "#/components/responses/wrongUserId"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/missingUser"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "description": "Delete user from database.",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register a user",
+        "operationId": "post-register",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Add user to database with encrypted password.",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/registerUser"
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login a user",
+        "operationId": "post-login",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Login a user verifying his email and password.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/loginUser"
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "get": {
+        "summary": "Logout a user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/logout"
+          }
+        },
+        "operationId": "get-logout",
+        "description": "Logout a user to clear token from cookie.\n\n",
+        "security": [
+          {
+            "token": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/updatepassword": {
+      "put": {
+        "summary": "Update user password",
+        "operationId": "put-updatepassword",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/token"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Update logged in user password.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/updatePassw"
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "summary": "Get user info",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/me"
+          }
+        },
+        "operationId": "get-me",
+        "description": "Get current user in the session."
+      }
+    },
+    "/api/v1/auth/updatedetails": {
+      "put": {
+        "summary": "Update user details",
+        "operationId": "put-updatedetails",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/me"
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "description": "Update logged in user name and email.",
+        "security": [
+          {
+            "token": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/updateDetails"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Course": {
+        "description": "Model to create a new Course.",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "weeks": {
+            "type": "string"
+          },
+          "tuition": {
+            "type": "number"
+          },
+          "minimumSkill": {
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "scholarhipsAvailable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "weeks",
+          "tuition",
+          "minimumSkill"
+        ]
+      },
+      "BootcampsResponse": {
+        "description": "Response model to fetch all Bootcamps.",
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "object",
+            "description": "Location from this bootcamp.",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "formattedAddress": {
+                "type": "string"
+              },
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zipcode": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          "careers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photo": {
+            "type": "string"
+          },
+          "housing": {
+            "type": "boolean"
+          },
+          "jobAssistance": {
+            "type": "boolean"
+          },
+          "jobGuarantee": {
+            "type": "boolean"
+          },
+          "acceptGi": {
+            "type": "boolean"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          },
+          "averageCost": {
+            "type": "number"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "scolarshipsAvailable": {
+                  "type": "boolean"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "weeks": {
+                  "type": "string"
+                },
+                "tuition": {
+                  "type": "number"
+                },
+                "minimumSkill": {
+                  "type": "string"
+                },
+                "bootcamp": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "string"
+                },
+                "createadAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "__v": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CoursesResponse": {
+        "description": "Response model to fetch all Courses.",
+        "type": "object",
+        "properties": {
+          "scholarhipsAvailable": {
+            "type": "boolean"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "weeks": {
+            "type": "string"
+          },
+          "tuition": {
+            "type": "number"
+          },
+          "minimumSkill": {
+            "type": "string"
+          },
+          "bootcamp": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
+      },
+      "Bootcamp": {
+        "description": "Model to create a new Bootcamp.",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "website": {
+            "type": "string",
+            "format": "uri"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 15
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "address": {
+            "type": "string"
+          },
+          "careers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Web Development",
+                "Mobile Development",
+                "UI/UX",
+                "Data Science",
+                "Business",
+                "Other"
+              ]
+            }
+          },
+          "housing": {
+            "type": "boolean"
+          },
+          "jobAssistance": {
+            "type": "boolean"
+          },
+          "jobGuarantee": {
+            "type": "boolean"
+          },
+          "acceptGi": {
+            "type": "boolean"
+          },
+          "averageCost": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "address",
+          "careers"
+        ]
+      },
+      "BootcampResponse": {
+        "description": "Response model to create new Bootcamp.",
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "object",
+            "description": "Location from this bootcamp.",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "formattedAddress": {
+                "type": "string"
+              },
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zipcode": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          "careers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photo": {
+            "type": "string"
+          },
+          "housing": {
+            "type": "boolean"
+          },
+          "jobAssistance": {
+            "type": "boolean"
+          },
+          "jobGuarantee": {
+            "type": "boolean"
+          },
+          "acceptGi": {
+            "type": "boolean"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "averageCost": {
+            "type": "number"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          }
+        },
+        "x-examples": {}
+      },
+      "CourseResponse": {
+        "description": "Response model to create new Course.",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "scholarhipsAvailable": {
+            "type": "boolean"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "weeks": {
+            "type": "string"
+          },
+          "tuition": {
+            "type": "number"
+          },
+          "minimumSkill": {
+            "type": "string"
+          },
+          "bootcamp": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
+      },
+      "ReviewResponse": {
+        "description": "Response model to create new Review.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "bootcamp": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "__v": {
+            "type": "number"
+          }
+        },
+        "x-examples": {}
+      },
+      "ReviewsResponse": {
+        "description": "Response model to fetch all Reviews.",
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "bootcamp": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Review": {
+        "description": "Model to create a new Review.",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": [
+          "title",
+          "text",
+          "rating"
+        ]
+      },
+      "UserResponse": {
+        "description": "Response model to create new User.",
+        "type": "object",
+        "x-examples": {
+          "user": {
+            "success": true,
+            "data": {
+              "role": "publisher",
+              "_id": "60fc42d680173b3e1159b218",
+              "name": "Al Pacino",
+              "password": "$2b$10$cPVnNSzEbbtYkur6MelQy.bJ7uaDbjsH49/5EjxL6cvIvTxeaO/de",
+              "email": "pacino@gmail.com",
+              "createdAt": "2021-07-24T16:41:58.974Z",
+              "__v": 0
+            }
+          }
+        },
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
+      },
+      "User": {
+        "description": "",
+        "type": "object",
+        "x-examples": {
+          "user": {
+            "role": "publisher",
+            "name": "Al Pacino",
+            "password": "12345678",
+            "email": "pacino@gmail.com"
+          }
+        },
+        "properties": {
+          "role": {
+            "type": "string",
+            "default": "user",
+            "enum": [
+              "user",
+              "publisher"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "name",
+          "password",
+          "email"
+        ]
+      },
+      "Me": {
+        "description": "",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "__v": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "token": {
+        "name": "token",
+        "type": "apiKey",
+        "in": "cookie",
+        "description": "Send a valid JWT in the cookies."
+      }
+    },
+    "parameters": {
+      "select": {
+        "name": "select",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "example": "name"
+        },
+        "description": "Select specific fields from bootcamp."
+      },
+      "sort": {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "name"
+        },
+        "description": "Sort by specific fields from bootcamp."
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "1",
+          "default": "1"
+        },
+        "description": "Add number of page for pagination the results."
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "10",
+          "example": "2"
+        },
+        "description": "Add limit of elements for the results."
+      },
+      "bootcampId": {
+        "name": "bootcampId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "5d725a1b7b292f5f8ceff788"
+        },
+        "description": "Bootcamp identifier."
+      },
+      "zipcode": {
+        "name": "zipcode",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "02118"
+        },
+        "description": "Postal code."
+      },
+      "distance": {
+        "name": "distance",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "10"
+        },
+        "description": "Distance in kilometers"
+      },
+      "courseId": {
+        "name": "courseId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "5d725cfec4ded7bcb480eaa7"
+        },
+        "description": "Course identifier."
+      },
+      "reviewId": {
+        "name": "reviewId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "60fc3193868ac51df7e16fa6"
+        },
+        "description": "Review identifier."
+      },
+      "userId": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "60fc42d680173b3e1159b218"
+        },
+        "description": "User identificator"
+      }
+    },
+    "examples": {
+      "bootcamp": {
+        "value": {
+          "name": "Devcentral Bootcamp",
+          "description": "Is coding your passion?",
+          "website": "https://devcentral.com",
+          "phone": "(444) 444-4444",
+          "email": "enroll@devcentral.com",
+          "address": "233 Bay State Rd Boston MA 02215",
+          "careers": [
+            "Web Development",
+            "UI/UX",
+            "Business"
+          ],
+          "housing": false,
+          "jobAssistance": true,
+          "jobGuarantee": true,
+          "acceptGi": true,
+          "averageCost": 6340
+        }
+      },
+      "course": {
+        "value": {
+          "title": "IOS Development",
+          "description": "Get started building mobile applications",
+          "weeks": "8",
+          "tuition": 6000,
+          "minimumSkill": "intermediate",
+          "scholarhipsAvailable": false
+        }
+      },
+      "review": {
+        "value": {
+          "title": "Nice bootcamp",
+          "text": "I learned a lot",
+          "rating": 10
+        }
+      },
+      "user": {
+        "value": {
+          "role": "publisher",
+          "name": "Al Pacino",
+          "password": "12345678",
+          "email": "pacino@gmail.com"
+        }
+      },
+      "reviewsByBootcamp": {
+        "value": {
+          "success": true,
+          "count": 1,
+          "data": [
+            {
+              "_id": "627bb71d94ed884876d92cf1",
+              "title": "Nice bootcamp 1",
+              "text": "I learned a lot",
+              "rating": 10,
+              "bootcamp": "627bb69c94ed884876d92ce7",
+              "user": "627bb70a94ed884876d92cec",
+              "createdAt": "2022-05-11T13:16:13.681Z",
+              "__v": 0
+            }
+          ]
+        }
+      },
+      "registerUserReq": {
+        "value": {
+          "name": "Richard Stalman",
+          "email": "stalman@email.com",
+          "password": "12345678",
+          "role": "user"
+        }
+      },
+      "token": {
+        "value": {
+          "success": true,
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.iBfEdH-2e5k14LWnTvIoXB9Ws674gQrwfjcQpLupdg"
+        }
+      },
+      "loginUser": {
+        "value": {
+          "email": "stallman@email.com",
+          "password": "12345678"
+        }
+      },
+      "me": {
+        "value": {
+          "success": true,
+          "data": {
+            "role": "user",
+            "_id": "627be0a16f6ca6747910981a",
+            "name": "Richard Stallman",
+            "email": "stallman@email.com",
+            "createdAt": "2022-05-11T16:13:21.862Z",
+            "__v": 0
+          }
+        }
+      }
+    },
+    "responses": {
+      "bootcamps": {
+        "description": "Bootcamps response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "allOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/BootcampsResponse"
+                      }
+                    }
+                  ],
+                  "type": "array"
+                }
+              }
+            },
+            "examples": {
+              "bootcamps": {
+                "value": {
+                  "success": true,
+                  "count": 10,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 2
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 2
+                    }
+                  },
+                  "data": [
+                    {
+                      "location": {
+                        "type": "Point",
+                        "coordinates": [
+                          -71.525909,
+                          41.483657
+                        ],
+                        "formattedAddress": "45 Upper College Rd, Kingston, RI 02881-2003, US",
+                        "street": "45 Upper College Rd",
+                        "city": "Kingston",
+                        "state": "RI",
+                        "zipcode": "02881-2003",
+                        "country": "US"
+                      },
+                      "careers": [
+                        "Mobile Development",
+                        "Web Development",
+                        "Data Science",
+                        "Business"
+                      ],
+                      "photo": "no-photo.jpg",
+                      "housing": false,
+                      "jobAssistance": true,
+                      "jobGuarantee": true,
+                      "acceptGi": true,
+                      "_id": "5d725a1b7b292f5f8ceff788",
+                      "user": "5c8a1d5b0190b214360dc032",
+                      "name": "Devcentral Bootcamp",
+                      "description": "Is coding your passion?",
+                      "website": "https://devcentral.com",
+                      "phone": "(444) 444-4444",
+                      "email": "enroll@devcentral.com",
+                      "createdAt": "2021-07-19T20:11:22.514Z",
+                      "slug": "devcentral-bootcamp",
+                      "__v": 0,
+                      "averageCost": 6340,
+                      "courses": [
+                        {
+                          "scholarhipsAvailable": false,
+                          "_id": "5d725cfec4ded7bcb480eaa5",
+                          "title": "Web Development",
+                          "description": "This course will teach you how to build high quality web applications.",
+                          "weeks": "8",
+                          "tuition": 8000,
+                          "minimumSkill": "beginner",
+                          "bootcamp": "5d725a1b7b292f5f8ceff788",
+                          "user": "5c8a1d5b0190b214360dc032",
+                          "createdAt": "2021-07-19T20:11:23.211Z",
+                          "__v": 0
+                        }
+                      ]
+                    },
+                    {
+                      "location": {
+                        "type": "Point",
+                        "coordinates": [
+                          -71.104028,
+                          42.350846
+                        ],
+                        "formattedAddress": "233 Bay State Rd, Boston, MA 02215-1405, US",
+                        "street": "233 Bay State Rd",
+                        "city": "Boston",
+                        "state": "MA",
+                        "zipcode": "02215-1405",
+                        "country": "US"
+                      },
+                      "careers": [
+                        "Web Development",
+                        "UI/UX",
+                        "Business"
+                      ],
+                      "photo": "no-photo.jpg",
+                      "housing": true,
+                      "jobAssistance": true,
+                      "jobGuarantee": false,
+                      "acceptGi": true,
+                      "_id": "5d713995b721c3bb38c1f5d0",
+                      "user": "5d7a514b5d2c12c7449be045",
+                      "name": "Devworks Bootcamp",
+                      "description": "Devworks is a full stack JavaScript Bootcamp located in the heart of Boston.",
+                      "website": "https://devworks.com",
+                      "phone": "(111) 111-1111",
+                      "email": "enroll@devworks.com",
+                      "createdAt": "2021-07-19T20:11:22.510Z",
+                      "slug": "devworks-bootcamp",
+                      "__v": 0,
+                      "averageCost": 9000,
+                      "courses": [
+                        {
+                          "scholarhipsAvailable": true,
+                          "_id": "5d725a4a7b292f5f8ceff789",
+                          "title": "Front End Web Development",
+                          "description": "This course will provide you with all of the essentials.",
+                          "weeks": "8",
+                          "tuition": 8000,
+                          "minimumSkill": "beginner",
+                          "bootcamp": "5d713995b721c3bb38c1f5d0",
+                          "user": "5d7a514b5d2c12c7449be045",
+                          "createdAt": "2021-07-19T20:11:23.206Z",
+                          "__v": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "courses": {
+        "description": "Courses response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "allOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/CoursesResponse"
+                      }
+                    }
+                  ],
+                  "type": "array"
+                }
+              }
+            },
+            "examples": {
+              "courses": {
+                "value": {
+                  "success": true,
+                  "count": 10,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 2
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 2
+                    }
+                  },
+                  "data": [
+                    {
+                      "__v": 0,
+                      "_id": "5d725cfec4ded7bcb480eaa7",
+                      "bootcamp": {
+                        "_id": "5d725a1b7b292f5f8ceff788",
+                        "name": "Devcentral Bootcamp",
+                        "description": "Is coding your passion?",
+                        "id": "5d725a1b7b292f5f8ceff788"
+                      },
+                      "createdAt": "2021-07-19T20:11:23.213Z",
+                      "description": "Get started building mobile applications.",
+                      "minimumSkill": "intermediate",
+                      "scholarhipsAvailable": false,
+                      "title": "IOS Development",
+                      "tuition": 6000,
+                      "user": "5c8a1d5b0190b214360dc032",
+                      "weeks": "8"
+                    },
+                    {
+                      "scholarhipsAvailable": false,
+                      "_id": "5d725cfec4ded7bcb480eaa6",
+                      "title": "Software QA",
+                      "description": "This course will teach you everything you need to know about quality assurance.",
+                      "weeks": "6",
+                      "tuition": 5000,
+                      "minimumSkill": "intermediate",
+                      "bootcamp": {
+                        "_id": "5d725a1b7b292f5f8ceff788",
+                        "name": "Devcentral Bootcamp",
+                        "description": "Is coding your passion?",
+                        "id": "5d725a1b7b292f5f8ceff788"
+                      },
+                      "user": "5c8a1d5b0190b214360dc032",
+                      "createdAt": "2021-07-19T20:11:23.212Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "bootcamp": {
+        "description": "Bootcamp creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/BootcampResponse"
+                }
+              }
+            },
+            "examples": {
+              "bootcamp": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "location": {
+                      "type": "Point",
+                      "coordinates": [
+                        -71.525909,
+                        41.483657
+                      ],
+                      "formattedAddress": "45 Upper College Rd, Kingston, RI 02881-2003, US",
+                      "street": "45 Upper College Rd",
+                      "city": "Kingston",
+                      "state": "RI",
+                      "zipcode": "02881-2003",
+                      "country": "US"
+                    },
+                    "careers": [
+                      "Mobile Development",
+                      "Web Development",
+                      "Data Science",
+                      "Business"
+                    ],
+                    "photo": "no-photo.jpg",
+                    "housing": false,
+                    "jobAssistance": true,
+                    "jobGuarantee": true,
+                    "acceptGi": true,
+                    "_id": "5d725a1b7b292f5f8ceff788",
+                    "user": "5c8a1d5b0190b214360dc032",
+                    "name": "Devcentral Bootcamp",
+                    "description": "Is coding your passion?",
+                    "website": "https://devcentral.com",
+                    "phone": "(444) 444-4444",
+                    "email": "enroll@devcentral.com",
+                    "createdAt": "2021-07-19T20:11:22.514Z",
+                    "slug": "devcentral-bootcamp",
+                    "__v": 0,
+                    "averageCost": 7750
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "course": {
+        "description": "Course creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            },
+            "examples": {
+              "course": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "scholarhipsAvailable": false,
+                    "_id": "5d725cfec4ded7bcb480eaa7",
+                    "title": "IOS Development",
+                    "description": "Get started building mobile applications for IOS",
+                    "weeks": "8",
+                    "tuition": 6000,
+                    "minimumSkill": "intermediate",
+                    "bootcamp": "5d725a1b7b292f5f8ceff788",
+                    "user": "5c8a1d5b0190b214360dc032",
+                    "createdAt": "2021-07-19T20:11:23.213Z",
+                    "__v": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingBootcamp": {
+        "description": "Missed Bootcamp response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingBootcampId": {
+                "value": {
+                  "success": false,
+                  "error": "Bootcamp with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongBootcampId": {
+        "description": "Wrong Bootcamp id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongBootcampId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"Bootcamp\""
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingCourse": {
+        "description": "Missed Course response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingCourse": {
+                "value": {
+                  "success": false,
+                  "error": "Course with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongCourseId": {
+        "description": "Wrong Course id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongCourseId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"Course\""
+                }
+              }
+            }
+          }
+        }
+      },
+      "reviews": {
+        "description": "Reviews response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewsResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "reviews": {
+                "value": {
+                  "success": true,
+                  "count": 2,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 2
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 2
+                    }
+                  },
+                  "data": [
+                    {
+                      "_id": "5d7a514b5d2c12c7449be024",
+                      "title": "Great overall experience",
+                      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "rating": 7,
+                      "bootcamp": {
+                        "_id": "5d725a037b292f5f8ceff787",
+                        "name": "Codemasters",
+                        "description": "Is coding your passion?"
+                      },
+                      "user": "5c8a1d5b0190b214360dc037",
+                      "createdAt": "2021-07-19T20:11:23.565Z",
+                      "__v": 0
+                    },
+                    {
+                      "_id": "5d7a514b5d2c12c7449be025",
+                      "title": "Not worth the money",
+                      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "rating": 5,
+                      "bootcamp": {
+                        "_id": "5d725a037b292f5f8ceff787",
+                        "name": "Codemasters",
+                        "description": "Is coding your passion?"
+                      },
+                      "user": "5c8a1d5b0190b214360dc038",
+                      "createdAt": "2021-07-19T20:11:23.565Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "review": {
+        "description": "Review creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            },
+            "examples": {
+              "review": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "_id": "60fc3193868ac51df7e16fa6",
+                    "title": "Nice bootcamp",
+                    "text": "I learned a lot",
+                    "rating": 10,
+                    "bootcamp": "5d725a1b7b292f5f8ceff788",
+                    "user": "5c8a1d5b0190b214360dc032",
+                    "createdAt": "2021-07-24T15:28:19.061Z",
+                    "__v": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingReview": {
+        "description": "Missed Review response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingReview": {
+                "value": {
+                  "success": false,
+                  "error": "Review with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongReviewId": {
+        "description": "Wrong Review id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongReviewId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"Review\""
+                }
+              }
+            }
+          }
+        }
+      },
+      "users": {
+        "description": "Users response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "next": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "prev": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "limit": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "type": "array",
+                  "uniqueItems": false,
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "users": {
+                "value": {
+                  "success": true,
+                  "count": 10,
+                  "pagination": {
+                    "next": {
+                      "page": 3,
+                      "limit": 10
+                    },
+                    "prev": {
+                      "page": 1,
+                      "limit": 10
+                    }
+                  },
+                  "data": [
+                    {
+                      "role": "publisher",
+                      "_id": "60fc42d680173b3e1159b218",
+                      "name": "Al Pacino",
+                      "email": "pacino@gmail.com",
+                      "createdAt": "2021-07-24T16:41:58.974Z",
+                      "__v": 0
+                    },
+                    {
+                      "role": "user",
+                      "_id": "5c8a1d5b0190b214360dc040",
+                      "name": "Sara Kensing",
+                      "email": "sara@gmail.com",
+                      "createdAt": "2021-07-19T20:11:23.259Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "user": {
+        "description": "User creation response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "examples": {
+              "user": {
+                "value": {
+                  "success": true,
+                  "data": {
+                    "role": "publisher",
+                    "_id": "60fc42d680173b3e1159b218",
+                    "name": "Al Pacino",
+                    "password": "$2b$10$cPVnNSzEbbtYkur6MelQy.bJ7uaDbjsH49/5EjxL6cvIvTxeaO/de",
+                    "email": "pacino@gmail.com",
+                    "createdAt": "2021-07-24T16:41:58.974Z",
+                    "__v": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "missingUser": {
+        "description": "Missed User response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "missingUser": {
+                "value": {
+                  "success": false,
+                  "error": "User with id 60fb2738e49f6777a5be5bd6 was not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "wrongUserId": {
+        "description": "Wrong User id format response schema.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "wrongUserId": {
+                "value": {
+                  "success": false,
+                  "error": "Cast to ObjectId failed for value \"60fb2738e49f6777a5be5bdX\" (type string) at path \"_id\" for model \"User\""
+                }
+              }
+            }
+          }
+        }
+      },
+      "reviewsByBootcamp": {
+        "description": "Reviews by bootcamp",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "count": 1,
+                  "data": [
+                    {
+                      "_id": "627bb71d94ed884876d92cf1",
+                      "title": "Nice bootcamp 1",
+                      "text": "I learned a lot",
+                      "rating": 10,
+                      "bootcamp": "627bb69c94ed884876d92ce7",
+                      "user": "627bb70a94ed884876d92cec",
+                      "createdAt": "2022-05-11T13:16:13.681Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewResponse"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "reviews-by-bootcamp-id": {
+                "$ref": "#/components/examples/reviewsByBootcamp"
+              }
+            }
+          }
+        }
+      },
+      "token": {
+        "description": "Auth token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjdiYjcwYTk0ZWQ4ODQ4NzZkOTJjZWMiLCJpYXQiOjE2NTIyNzQ5NTQsImV4cCI6MTY1MjM2MTM1NH0.iBfEdH-C2e5k14LWnTvIoXB9Ws674gQrwfjcQpLupdg"
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "auth-token": {
+                "$ref": "#/components/examples/token"
+              }
+            }
+          }
+        }
+      },
+      "logout": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "data": {}
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "type": "object"
+                }
+              }
+            },
+            "examples": {
+              "logout": {
+                "value": {
+                  "success": true,
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "me": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "success": true,
+                  "data": {
+                    "role": "user",
+                    "_id": "627be0a16f6ca6747910981a",
+                    "name": "Richard Stallman",
+                    "email": "stallman@email.com",
+                    "createdAt": "2022-05-11T16:13:21.862Z",
+                    "__v": 0
+                  }
+                }
+              },
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "examples": {
+              "me-info": {
+                "$ref": "#/components/examples/me"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "registerUser": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "name": "Richard Stalman",
+                  "email": "stalman@email.com",
+                  "password": "12345678",
+                  "role": "user"
+                }
+              },
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "minLength": 8
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "publisher"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "email",
+                "password",
+                "role"
+              ]
+            },
+            "examples": {
+              "register-user": {
+                "$ref": "#/components/examples/registerUserReq"
+              }
+            }
+          }
+        },
+        "description": ""
+      },
+      "loginUser": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "email": "stalman@email.com",
+                  "password": "12345678"
+                }
+              },
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                }
+              },
+              "required": [
+                "email",
+                "password"
+              ]
+            },
+            "examples": {
+              "login": {
+                "$ref": "#/components/examples/loginUser"
+              }
+            }
+          }
+        }
+      },
+      "updatePassw": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "currentPassword": "12345678",
+                  "newPassword": "mySecurePassword"
+                }
+              },
+              "properties": {
+                "currentPassword": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "minLength": 8,
+                  "format": "password"
+                }
+              },
+              "required": [
+                "currentPassword",
+                "newPassword"
+              ]
+            },
+            "examples": {
+              "new-password": {
+                "value": {
+                  "currentPassword": "12345678",
+                  "newPassword": "mySecurePassword"
+                }
+              }
+            }
+          }
+        }
+      },
+      "updateDetails": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "",
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "name": "Kevin Mitnik",
+                  "email": "mitnik@gmail.com"
+                }
+              },
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
+            },
+            "examples": {
+              "update-details": {
+                "value": {
+                  "name": "Richard Stallman",
+                  "email": "stallman@hotmail.com"
+                }
+              }
+            }
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "security": [
+    {
+      "token": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Bootcamp"
+    },
+    {
+      "name": "Course"
+    },
+    {
+      "name": "Review"
+    },
+    {
+      "name": "User"
+    }
+  ]
+}

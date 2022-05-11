@@ -1,0 +1,46 @@
+name: CI-almighty-devcamp
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 🚨
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+
+      - name: Start MongoDB 💾
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: "3"
+
+      - name: Cache Node.js modules ⏰
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies 🔧
+        run: npm install
+
+      - name: Test 🧪
+        run: npm test
+        env:
+          MONGO_URI_TEST: mongodb://localhost/almightyCamperTestDB
+          GEOCODER_PROVIDER: ${{ secrets.GEOCODER_PROVIDER }}
+          GEOCODER_API_KEY: ${{ secrets.GEOCODER_API_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TEST_FILE_UPLOAD_PATH: ./tests/integration/controllers/uploads
+          JWT_EXPIRE: 1d
+          JWT_COOKIE_EXPIRE: 1
+          CI: true
